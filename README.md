@@ -1,22 +1,38 @@
-# Emanet Envanter — GitHub Pages
+# Envanter & İmha Takip Sistemi
 
-Bu repoya site dosyalarını ekledim (index.html). Aşağıdaki adımları izleyerek GitHub Pages'i etkinleştirip siteyi canlıya alabilirsiniz:
+Bu proje, emanet bürolarında veya soruşturma işlemlerinde fiziksel envanterin (zarf, poşet, swap vb.) kayıt altına alınması, gruplanması ve imha süreçlerinin takibi için geliştirilmiş **mobil odaklı, hafif ve hızlı** bir web uygulamasıdır.
 
-1. GitHub'da repo sayfasına gidin: https://github.com/korayaclan/env-takip
-2. Sağ üstteki "Settings" (Ayarlar) sekmesine tıklayın.
-3. Sol menüde "Pages" bölümünü seçin.
-4. "Build and deployment" kısmında **Branch** kaynağını seçin:
-   - Source: "Deploy from a branch"
-   - Branch: Varsayılan branch (ör. `main` veya `master`)
-   - Folder: `/ (root)`
-5. Save/Save button'a tıklayın.
-6. Birkaç dakika içinde site şu adreste erişilebilir olacaktır:
+## 🚀 Proje Amacı
+Yüzlerce emanet parçasının elle not edilmesinden kaynaklanan zaman kaybını ve veri hatalarını ortadan kaldırmak; tamamen tarayıcı tabanlı çalışarak kapalı sistemlerde dahi veri güvenliğini korumak amacıyla tasarlanmıştır.
 
-   https://korayaclan.github.io/env-takip/
+## 🛠 Temel Özellikler
+- **Mobil Öncelikli Arayüz:** Akıllı telefon ve tabletlerde seri giriş yapmak için optimize edilmiştir.
+- **Mantıksal Gruplama:** Karar/Grup Yılı mantığı ile emanetleri raf/dosya düzenine göre ayırır.
+- **Hızlı Seri Giriş:** Bir kez yıl seçimi yapıldığında, numaraları ardı ardına ekleyebileceğiniz akıcı bir giriş modu.
+- **Dışa Aktarma:** Tek tıkla Excel (.xlsx) listeleme ve Yazıcı dostu (A4) PDF çıktı alma.
+- **Çevrimdışı Çalışma:** İnternet gerektirmez, tüm veriler tarayıcınızın yerel hafızasında saklanır.
+- **Güvenli Yedekleme:** JSON formatında veri yedekleme ve yükleme desteği.
 
-Notlar:
-- Site CDN'den (Tailwind, Vue, Font Awesome, XLSX) dosyalar çekiyor; çalışması için internet bağlantısı gerekir.
-- Eğer isterseniz dosyaları `/docs` klasörüne taşımamı da söyleyin — yine Pages ayarlarında klasörü `/docs` olarak seçmeniz gerekir.
-- Ben dosyaları repoya ekledim. Pages'i etkinleştirmek için Settings -> Pages adımını sizin yapmanız gerekiyor (yetki gerektirir).
+## 🔒 Veri Güvenliği ve Gizlilik
+Bu uygulama **"Local-First"** prensibiyle çalışır.
+- **Sunucu Yok:** Verileriniz herhangi bir uzak sunucuya, veritabanına veya buluta gönderilmez.
+- **Yerel Saklama:** Tüm kayıtlar sadece kullandığınız cihazın tarayıcısında (LocalStorage) saklanır.
+- **Tam Kontrol:** "Verileri Yedekle" seçeneği ile verilerinizin tam bir kopyasını her zaman kendi bilgisayarınızda tutabilirsiniz.
 
-İsterseniz ben repo içindeki başka dosyaları da düzenleyip (ör. README güncellemesi veya temizlik) commitleyebilirim.
+## 💻 Kullanım Talimatları
+1. **Giriş:** Uygulamayı tarayıcınızda açın.
+2. **Grup Seçimi:** Üst kısımdaki akordiyon menüden ilgili Karar/Grup yılını seçin.
+3. **Kayıt:** Emanet ve Soruşturma numaralarını girerek "Kaydet" butonuna basın.
+4. **Kontrol:** "Liste" sekmesinden kayıtlarınızı görüntüleyin. İmha durumlarını tek tıkla güncelleyin.
+5. **Rapor:** Sağ üstteki butonlarla Excel veya Yazdırma çıktısı alarak fiziksel dosya ile karşılaştırmanızı yapın.
+
+## 📦 Kurulum ve Yayınlama
+Bu uygulama statik HTML/JS yapısında olduğu için herhangi bir sunucu veya veritabanı kurulumu gerektirmez.
+- **GitHub Pages / Cloudflare Pages:** Projenizi doğrudan bu platformlara yükleyerek herhangi bir hosting maliyeti olmadan anında canlıya alabilirsiniz.
+- **Kurulum:** Sadece `index.html` dosyasını sunucunuza atmanız yeterlidir.
+
+## 📄 Lisans
+Bu proje geliştirme aşamasındaki, emanet büroları ve soruşturma takip işlemleri için özelleştirilmiş bir araçtır.
+
+---
+*İhtiyaç duyulması halinde geliştirilmeye ve özelleştirilmeye açıktır.*
