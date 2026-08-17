@@ -9,46 +9,48 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* MOBİL SABİTLEME AYARLARI */
         html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Sayfanın kaymasını engeller */
-            overscroll-behavior: none; /* Lastik etkisini (bounce) engeller */
-            -webkit-overflow-scrolling: touch;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none; /* Mobilde yukarı-aşağı lastik esnemesini engeller */
         }
         @media print { 
+            html, body {
+                height: auto !important;
+                overflow: visible !important;
+                background: #fff !important;
+                color: #000 !important;
+            }
             .no-print { display: none !important; } 
             .print-only { display: block !important; } 
+            table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+            th, td { border: 1px solid #333; padding: 6px; font-size: 11px; }
+            th { background-color: #f3f4f6; }
         }
         .print-only { display: none; }
     </style>
 </head>
-<body class="bg-slate-100">
+<body class="bg-slate-100 min-h-screen">
 
-<!-- Uygulamayı ekrana kilitledik (h-screen, overflow-hidden) -->
-<div id="app" class="h-screen flex flex-col overflow-hidden">
-    
-    <header class="bg-slate-900 text-white p-3.5 flex-none shadow-md no-print flex justify-between items-center">
+<div id="app" class="max-w-md mx-auto min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-3.5 sticky top-0 z-50 shadow-md no-print flex justify-between items-center">
         <div>
             <h1 class="font-bold text-base leading-tight">Envanter Takip</h1>
             <p class="text-[10px] text-slate-400">Saha Kayıt Modülü</p>
         </div>
         <div class="flex gap-1.5">
-            <button @click="exportExcel" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow">
+            <button @click="exportExcel" class="bg-emerald-600 active:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow">
                 <i class="fa-solid fa-file-excel"></i> Excel
             </button>
-            <button @click="triggerPrint" class="bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow">
+            <button @click="triggerPrint" class="bg-slate-700 active:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow">
                 <i class="fa-solid fa-print"></i> Yazdır
             </button>
         </div>
     </header>
 
-    <!-- Burayı scroll edilebilir yaptık (overflow-y-auto) -->
-    <main class="flex-1 overflow-y-auto p-3 space-y-3 no-print">
-        
-        <!-- Karar Yılı -->
+    <main class="p-3 space-y-3 pb-12 no-print flex-1">
+        <!-- Karar Yılı Akordiyon -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
             <button type="button" @click="showYear = !showYear" class="w-full flex justify-between items-center text-xs font-bold text-indigo-900">
                 <span>Karar / Grup Yılı: <strong class="text-indigo-600 font-mono text-sm">{{ form.kararYili }}</strong></span>
@@ -64,47 +66,112 @@
 
         <!-- Hızlı Form -->
         <form @submit.prevent="addItem" class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 space-y-3">
+            
+            <!-- Emanet No (Sayısal Klavye) -->
             <div class="space-y-1">
-                <label class="text-[11px] font-bold text-slate-600 uppercase">Emanet No</label>
+                <div class="flex justify-between items-center">
+                    <label class="text-[11px] font-bold text-slate-600 uppercase">Emanet No</label>
+                    <div class="flex gap-1">
+                        <button type="button" v-for="yOff in [0,1,2,3]" :key="'ey-'+yOff"
+                                @click="form.emanetYil = (parseInt(form.kararYili || 2013) - yOff).toString()"
+                                :class="form.emanetYil === (parseInt(form.kararYili || 2013) - yOff).toString() ? 'bg-blue-600 text-white font-bold' : 'bg-slate-100 text-slate-600'"
+                                class="px-1.5 py-0.5 text-[10px] rounded font-mono">{{ parseInt(form.kararYili || 2013) - yOff }}</button>
+                    </div>
+                </div>
                 <div class="flex border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
-                    <input type="number" pattern="\d*" v-model="form.emanetYil" required class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
-                    <input type="number" pattern="\d*" v-model="form.emanetNo" placeholder="Sıra No (Örn: 1522)" required ref="emanetInput" class="flex-1 p-2 text-sm font-mono outline-none">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" v-model="form.emanetYil" required
+                           class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" v-model="form.emanetNo" placeholder="No (Örn: 1522)" required ref="emanetInput"
+                           class="flex-1 p-2 text-sm font-mono outline-none">
                 </div>
             </div>
 
+            <!-- Soruşturma No (Sayısal Klavye) -->
             <div class="space-y-1">
-                <label class="text-[11px] font-bold text-slate-600 uppercase">Soruşturma / Esas No</label>
+                <div class="flex justify-between items-center">
+                    <label class="text-[11px] font-bold text-slate-600 uppercase">Soruşturma / Esas No</label>
+                    <div class="flex gap-1">
+                        <button type="button" v-for="yOff in [0,1,2,3]" :key="'sy-'+yOff"
+                                @click="form.dosyaYil = (parseInt(form.kararYili || 2013) - yOff).toString()"
+                                :class="form.dosyaYil === (parseInt(form.kararYili || 2013) - yOff).toString() ? 'bg-blue-600 text-white font-bold' : 'bg-slate-100 text-slate-600'"
+                                class="px-1.5 py-0.5 text-[10px] rounded font-mono">{{ parseInt(form.kararYili || 2013) - yOff }}</button>
+                    </div>
+                </div>
                 <div class="flex border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
-                    <input type="number" pattern="\d*" v-model="form.dosyaYil" required class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
-                    <input type="number" pattern="\d*" v-model="form.dosyaNo" placeholder="No (Örn: 25411)" required class="flex-1 p-2 text-sm font-mono outline-none">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" v-model="form.dosyaYil" required
+                           class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" v-model="form.dosyaNo" placeholder="No (Örn: 25411)" required
+                           class="flex-1 p-2 text-sm font-mono outline-none">
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl text-sm shadow-md transition">KAYDET VE LİSTEYE EKLE</button>
+            <!-- KAYDET BUTONU -->
+            <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-blue-500/20 text-sm transition">
+                KAYDET VE LİSTEYE EKLE
+            </button>
 
-            <!-- Emanet Türü -->
+            <!-- Emanet Türü Akordiyon -->
             <div class="border-t border-slate-100 pt-2.5">
                 <button type="button" @click="showType = !showType" class="w-full flex justify-between items-center text-xs text-slate-600 font-semibold">
                     <span>Emanet Türü: <strong class="text-blue-600">{{ form.materyalTuru }}</strong></span>
                     <i :class="showType ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-slate-400 text-xs"></i>
                 </button>
                 <div v-show="showType" class="flex flex-wrap gap-1 mt-2">
-                    <button type="button" v-for="t in ['Zarf','Poşet','Swap','Bilinmiyor','Emanet Yok','Kutu','Dijital']" :key="t" @click="form.materyalTuru=t; showType=false" :class="form.materyalTuru === t ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'" class="px-2.5 py-1 rounded-lg text-xs transition">{{ t }}</button>
+                    <button type="button" v-for="t in ['Zarf','Poşet','Swap','Bilinmiyor','Emanet Yok','Kutu','Dijital']" :key="'tag-'+t"
+                            @click="form.materyalTuru=t; showType=false" 
+                            :class="form.materyalTuru === t ? 'bg-blue-600 text-white font-bold' : 'bg-slate-100 text-slate-700 border'"
+                            class="px-2.5 py-1 rounded-lg text-xs transition">{{ t }}</button>
                 </div>
             </div>
         </form>
 
         <!-- Liste Kartları -->
-        <div class="space-y-1.5 pb-4">
-            <div v-for="item in items" :key="item.id" class="bg-white p-2.5 rounded-xl border border-slate-200 flex justify-between items-center">
+        <div class="space-y-1.5">
+            <div v-if="items.length === 0" class="bg-white p-6 rounded-xl text-center border border-slate-200 text-slate-400 text-xs">
+                Henüz kayıt eklenmedi.
+            </div>
+            <div v-for="item in items" :key="item.id" class="bg-white p-2.5 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm">
                 <div>
-                    <span class="font-bold text-xs">{{ item.emanetYil }}/{{ item.emanetNo }}</span>
-                    <p class="text-[10px] text-slate-500">{{ item.dosyaYil }}/{{ item.dosyaNo }} ({{ item.materyalTuru }})</p>
+                    <div class="flex items-center gap-1 mb-0.5">
+                        <span class="bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.5 rounded text-[10px] font-mono">Grup: {{ item.kararYili }}</span>
+                        <span class="font-bold text-xs text-slate-900 font-mono">{{ item.emanetYil }}/{{ item.emanetNo }}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-mono">{{ item.dosyaYil }}/{{ item.dosyaNo }} ({{ item.materyalTuru }})</p>
                 </div>
-                <button type="button" @click="deleteItem(item.id)" class="text-slate-300 hover:text-rose-500 p-2"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                <button type="button" @click="deleteItem(item.id)" class="text-slate-300 hover:text-rose-500 p-2 text-xs">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
             </div>
         </div>
     </main>
+
+    <!-- Yazdırma Şablonu -->
+    <div class="print-only p-4">
+        <h2 style="text-align:center; font-weight:bold; font-size:14px; margin-bottom:10px;">EMANET ENVANTER & İMHA KONTROL LİSTESİ</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:30px; text-align:center;">S.No</th>
+                    <th style="width:110px;">Emanet No</th>
+                    <th style="width:140px;">Soruşturma / Esas</th>
+                    <th style="width:70px; text-align:center;">Karar Yılı</th>
+                    <th style="width:90px;">Emanet Türü</th>
+                    <th style="width:60px; text-align:center;">Kontrol</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, idx) in items" :key="'p-'+item.id">
+                    <td style="text-align:center;">{{ idx + 1 }}</td>
+                    <td style="font-family:monospace; font-weight:bold;">{{ item.emanetYil }}/{{ item.emanetNo }}</td>
+                    <td style="font-family:monospace;">{{ item.dosyaYil }}/{{ item.dosyaNo }}</td>
+                    <td style="text-align:center; font-family:monospace;">{{ item.kararYili }}</td>
+                    <td>{{ item.materyalTuru }}</td>
+                    <td style="text-align:center;"><div style="width:14px; height:14px; border:1px solid #000; margin:auto;"></div></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -116,15 +183,65 @@
             const showYear = ref(false);
             const showType = ref(false);
             const emanetInput = ref(null);
-            const form = ref({ kararYili: '2013', emanetYil: '2013', emanetNo: '', dosyaYil: '2013', dosyaNo: '', materyalTuru: 'Zarf' });
 
-            const setKararYili = (yr) => { form.value.kararYili = yr; form.value.emanetYil = yr; form.value.dosyaYil = yr; showYear.value = false; };
-            onMounted(() => { const db = localStorage.getItem('emanet_lite_db'); if (db) items.value = JSON.parse(db); });
-            watch(items, (newVal) => { localStorage.setItem('emanet_lite_db', JSON.stringify(newVal)); }, { deep: true });
-            const addItem = () => { items.value.unshift({ id: Date.now().toString(), ...form.value }); form.value.emanetNo = ''; form.value.dosyaNo = ''; if(emanetInput.value) emanetInput.value.focus(); };
-            const deleteItem = (id) => { items.value = items.value.filter(i => i.id !== id); };
-            const exportExcel = () => { /* Excel mantığı... */ alert('Excel indiriliyor'); };
-            const triggerPrint = () => { window.print(); };
+            const form = ref({
+                kararYili: '2013',
+                emanetYil: '2013',
+                emanetNo: '',
+                dosyaYil: '2013',
+                dosyaNo: '',
+                materyalTuru: 'Zarf'
+            });
+
+            const setKararYili = (yr) => {
+                form.value.kararYili = yr;
+                form.value.emanetYil = yr;
+                form.value.dosyaYil = yr;
+                showYear.value = false;
+            };
+
+            onMounted(() => {
+                const db = localStorage.getItem('emanet_lite_db');
+                if (db) items.value = JSON.parse(db);
+            });
+
+            watch(items, (newVal) => {
+                localStorage.setItem('emanet_lite_db', JSON.stringify(newVal));
+            }, { deep: true });
+
+            const addItem = () => {
+                items.value.unshift({
+                    id: Date.now().toString(),
+                    ...form.value
+                });
+                form.value.emanetNo = '';
+                form.value.dosyaNo = '';
+                if (emanetInput.value) emanetInput.value.focus();
+            };
+
+            const deleteItem = (id) => {
+                items.value = items.value.filter(i => i.id !== id);
+            };
+
+            const exportExcel = () => {
+                if (items.value.length === 0) return alert('Kayıt yok!');
+                const data = items.value.map((item, idx) => ({
+                    'S.No': idx + 1,
+                    'Karar Yılı': item.kararYili,
+                    'Emanet No': `${item.emanetYil}/${item.emanetNo}`,
+                    'Soruşturma No': `${item.dosyaYil}/${item.dosyaNo}`,
+                    'Emanet Türü': item.materyalTuru
+                }));
+                const ws = XLSX.utils.json_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Envanter");
+                XLSX.writeFile(wb, `Emanet_Envanteri_${form.value.kararYili}_${new Date().toISOString().slice(0,10)}.xlsx`);
+            };
+
+            const triggerPrint = () => {
+                if (items.value.length === 0) return alert('Yazdırılacak kayıt yok!');
+                window.print();
+            };
 
             return { targetYears, items, showYear, showType, form, emanetInput, setKararYili, addItem, deleteItem, exportExcel, triggerPrint };
         }
