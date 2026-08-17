@@ -17,9 +17,9 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* =========================================================
-           MOBİL / SABİT UYGULAMA ALANI
-           ========================================================= */
+        /* =====================================================
+           MOBİL UYGULAMA ALANI
+           ===================================================== */
 
         html,
         body {
@@ -46,20 +46,10 @@
             overscroll-behavior: contain;
         }
 
-        @media (max-width: 640px) {
-            #app {
-                height: 100dvh;
-                max-height: 100dvh;
-            }
 
-            .app-main {
-                padding-bottom: 12px;
-            }
-        }
-
-        /* =========================================================
+        /* =====================================================
            YAZDIRMA
-           ========================================================= */
+           ===================================================== */
 
         @media print {
 
@@ -87,10 +77,11 @@
                 color: #000 !important;
             }
 
-            /*
-             * Tablo A4 yazdırma alanına tam oturur.
-             * Sabit genişlik yerine yüzde kullanıyoruz.
-             */
+
+            /* -------------------------------------------------
+               TABLO
+               ------------------------------------------------- */
+
             table {
                 width: 100%;
                 max-width: 100%;
@@ -99,6 +90,7 @@
                 margin: 0 auto;
             }
 
+
             th,
             td {
                 border: 1px solid #333;
@@ -106,37 +98,64 @@
                 font-size: 11px;
                 vertical-align: middle;
                 box-sizing: border-box;
-                overflow-wrap: break-word;
-                word-break: normal;
             }
 
+
+            /*
+             * BAŞLIKLARDA KELİME BÖLÜNMESİN.
+             *
+             * Önceki sürümde taşmayı engellemek için
+             * overflow-wrap / word-break kullanılıyordu.
+             *
+             * Burada özellikle başlıklarda kaldırıyoruz.
+             */
             th {
                 background-color: #f3f4f6;
                 text-align: center;
                 font-weight: bold;
+                white-space: nowrap;
+                word-break: normal;
+                overflow-wrap: normal;
             }
 
+
             /*
-             * Sonuç alanında yazının sağa taşmasını önler.
+             * Veri hücreleri gerektiğinde normal şekilde
+             * davranabilir.
              */
+            td {
+                word-break: normal;
+                overflow-wrap: normal;
+            }
+
+
+            /* -------------------------------------------------
+               SONUÇ SÜTUNU
+               ------------------------------------------------- */
+
             .result-cell {
                 text-align: center;
-                white-space: normal;
+                white-space: nowrap;
                 font-size: 10px;
                 line-height: 1.4;
             }
 
-            /*
-             * Alt bilgiler artık çizgisiz ve ferah.
-             */
+
+            /* -------------------------------------------------
+               ALT BİLGİ
+               ------------------------------------------------- */
+
             .print-footer {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 column-gap: 70px;
                 align-items: center;
+
                 margin-top: 12px;
                 padding-top: 0;
+
                 border-top: none;
+
                 font-size: 11px;
             }
 
@@ -150,9 +169,11 @@
             }
         }
 
+
         .print-only {
             display: none;
         }
+
     </style>
 </head>
 
@@ -163,14 +184,15 @@
      class="max-w-md mx-auto h-[100dvh] flex flex-col overflow-hidden">
 
 
-    <!-- =========================================================
+    <!-- =====================================================
          HEADER
-         ========================================================= -->
+         ===================================================== -->
 
     <header
         class="bg-slate-900 text-white p-3.5 sticky top-0 z-50 shadow-md no-print flex justify-between items-center flex-shrink-0">
 
         <div>
+
             <h1 class="font-bold text-base leading-tight">
                 Envanter Takip
             </h1>
@@ -178,7 +200,9 @@
             <p class="text-[10px] text-slate-400">
                 Saha Kayıt Modülü
             </p>
+
         </div>
+
 
         <div class="flex gap-1.5">
 
@@ -190,6 +214,7 @@
                 Excel
 
             </button>
+
 
             <button
                 @click="triggerPrint"
@@ -205,16 +230,14 @@
     </header>
 
 
-    <!-- =========================================================
+    <!-- =====================================================
          ANA İÇERİK
-         ========================================================= -->
+         ===================================================== -->
 
     <main class="app-main flex-1 min-h-0 p-3 space-y-3 no-print">
 
 
-        <!-- =====================================================
-             KARAR YILI AKORDİYON
-             ===================================================== -->
+        <!-- KARAR YILI -->
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
 
@@ -230,6 +253,7 @@
                         {{ form.kararYili }}
                     </strong>
                 </span>
+
 
                 <i
                     :class="showYear ? 'fa-chevron-up' : 'fa-chevron-down'"
@@ -271,9 +295,7 @@
             class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 space-y-3">
 
 
-            <!-- =================================================
-                 EMANET NO
-                 ================================================= -->
+            <!-- EMANET NO -->
 
             <div class="space-y-1">
 
@@ -282,6 +304,7 @@
                     <label class="text-[11px] font-bold text-slate-600 uppercase">
                         Emanet No
                     </label>
+
 
                     <div class="flex gap-1">
 
@@ -315,6 +338,7 @@
                         required
                         class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
 
+
                     <input
                         type="text"
                         inputmode="numeric"
@@ -330,9 +354,7 @@
             </div>
 
 
-            <!-- =================================================
-                 SORUŞTURMA NO
-                 ================================================= -->
+            <!-- SORUŞTURMA -->
 
             <div class="space-y-1">
 
@@ -341,6 +363,7 @@
                     <label class="text-[11px] font-bold text-slate-600 uppercase">
                         Soruşturma / Esas No
                     </label>
+
 
                     <div class="flex gap-1">
 
@@ -374,6 +397,7 @@
                         required
                         class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
 
+
                     <input
                         type="text"
                         inputmode="numeric"
@@ -388,9 +412,7 @@
             </div>
 
 
-            <!-- =================================================
-                 KAYDET BUTONU
-                 ================================================= -->
+            <!-- KAYDET -->
 
             <button
                 type="submit"
@@ -401,9 +423,7 @@
             </button>
 
 
-            <!-- =================================================
-                 EMANET TÜRÜ
-                 ================================================= -->
+            <!-- EMANET TÜRÜ -->
 
             <div class="border-t border-slate-100 pt-2.5">
 
@@ -413,12 +433,15 @@
                     class="w-full flex justify-between items-center text-xs text-slate-600 font-semibold">
 
                     <span>
+
                         Emanet Türü:
 
                         <strong class="text-blue-600">
                             {{ form.materyalTuru }}
                         </strong>
+
                     </span>
+
 
                     <i
                         :class="showType ? 'fa-chevron-up' : 'fa-chevron-down'"
@@ -454,7 +477,7 @@
 
 
         <!-- =====================================================
-             LİSTE KARTLARI
+             LİSTE
              ===================================================== -->
 
         <div class="space-y-1.5">
@@ -483,6 +506,7 @@
                             Grup: {{ item.kararYili }}
 
                         </span>
+
 
                         <span
                             class="font-bold text-xs text-slate-900 font-mono">
@@ -520,16 +544,14 @@
     </main>
 
 
-    <!-- =========================================================
+    <!-- =====================================================
          YAZDIRMA ŞABLONU
-         ========================================================= -->
+         ===================================================== -->
 
     <div class="print-only p-4">
 
 
-        <!-- =====================================================
-             BAŞLIK
-             ===================================================== -->
+        <!-- BAŞLIK -->
 
         <h2
             style="
@@ -544,9 +566,9 @@
         </h2>
 
 
-        <!-- =====================================================
+        <!-- =================================================
              TABLO
-             ===================================================== -->
+             ================================================= -->
 
         <table>
 
@@ -554,16 +576,16 @@
 
                 <tr>
 
-                    <!-- %7 -->
+                    <!-- SIRA NO -->
 
-                    <th style="width:7%;">
+                    <th style="width:10%;">
 
                         Sıra No.
 
                     </th>
 
 
-                    <!-- %17 -->
+                    <!-- EMANET NO -->
 
                     <th style="width:17%;">
 
@@ -572,7 +594,7 @@
                     </th>
 
 
-                    <!-- %23 -->
+                    <!-- SORUŞTURMA / ESAS -->
 
                     <th style="width:23%;">
 
@@ -581,7 +603,7 @@
                     </th>
 
 
-                    <!-- %11 -->
+                    <!-- KARAR YILI -->
 
                     <th style="width:11%;">
 
@@ -590,18 +612,18 @@
                     </th>
 
 
-                    <!-- %12 -->
+                    <!-- EMANET TÜRÜ -->
 
-                    <th style="width:12%;">
+                    <th style="width:14%;">
 
                         Emanet Türü
 
                     </th>
 
 
-                    <!-- %30 -->
+                    <!-- SONUÇ -->
 
-                    <th style="width:30%;">
+                    <th style="width:25%;">
 
                         Sonuç
 
@@ -619,7 +641,7 @@
                     :key="'p-'+item.id">
 
 
-                    <!-- SIRA -->
+                    <!-- SIRA NO -->
 
                     <td style="text-align:center;">
 
@@ -628,13 +650,14 @@
                     </td>
 
 
-                    <!-- EMANET -->
+                    <!-- EMANET NO -->
 
                     <td
                         style="
                             text-align:center;
                             font-family:monospace;
                             font-weight:bold;
+                            white-space:nowrap;
                         ">
 
                         {{ item.emanetYil }}/{{ item.emanetNo }}
@@ -648,6 +671,7 @@
                         style="
                             text-align:center;
                             font-family:monospace;
+                            white-space:nowrap;
                         ">
 
                         {{ item.dosyaYil }}/{{ item.dosyaNo }}
@@ -661,6 +685,7 @@
                         style="
                             text-align:center;
                             font-family:monospace;
+                            white-space:nowrap;
                         ">
 
                         {{ item.kararYili }}
@@ -670,7 +695,11 @@
 
                     <!-- EMANET TÜRÜ -->
 
-                    <td style="text-align:center;">
+                    <td
+                        style="
+                            text-align:center;
+                            white-space:nowrap;
+                        ">
 
                         {{ item.materyalTuru }}
 
@@ -692,9 +721,9 @@
         </table>
 
 
-        <!-- =====================================================
+        <!-- =================================================
              ALT BİLGİ
-             ===================================================== -->
+             ================================================= -->
 
         <div class="print-footer">
 
@@ -719,7 +748,7 @@
 
 
 <!-- =============================================================
-     VUE / JAVASCRIPT
+     VUE
      ============================================================= -->
 
 <script>
@@ -737,10 +766,6 @@
         setup() {
 
 
-            /* =====================================================
-               YILLAR
-               ===================================================== */
-
             const targetYears = [
                 '2005',
                 '2006',
@@ -757,40 +782,18 @@
             ];
 
 
-            /* =====================================================
-               KAYITLAR
-               ===================================================== */
-
             const items = ref([]);
-
-
-            /* =====================================================
-               AKORDİYONLAR
-               ===================================================== */
 
             const showYear = ref(false);
 
             const showType = ref(false);
 
-
-            /* =====================================================
-               EMANET INPUT
-               ===================================================== */
-
             const emanetInput = ref(null);
 
-
-            /* =====================================================
-               YAZDIRMA TARİHİ
-               ===================================================== */
 
             const printDate =
                 new Date().toLocaleDateString('tr-TR');
 
-
-            /* =====================================================
-               FORM
-               ===================================================== */
 
             const form = ref({
 
@@ -809,9 +812,7 @@
             });
 
 
-            /* =====================================================
-               KARAR YILI DEĞİŞTİR
-               ===================================================== */
+            /* KARAR YILI */
 
             const setKararYili = (yr) => {
 
@@ -826,9 +827,7 @@
             };
 
 
-            /* =====================================================
-               LOCAL STORAGE'DAN YÜKLE
-               ===================================================== */
+            /* LOCAL STORAGE */
 
             onMounted(() => {
 
@@ -859,9 +858,7 @@
             });
 
 
-            /* =====================================================
-               LOCAL STORAGE'A KAYDET
-               ===================================================== */
+            /* OTOMATİK KAYDET */
 
             watch(
 
@@ -883,9 +880,7 @@
             );
 
 
-            /* =====================================================
-               KAYIT EKLE
-               ===================================================== */
+            /* KAYIT EKLE */
 
             const addItem = () => {
 
@@ -912,9 +907,7 @@
             };
 
 
-            /* =====================================================
-               KAYIT SİL
-               ===================================================== */
+            /* KAYIT SİL */
 
             const deleteItem = (id) => {
 
@@ -926,9 +919,7 @@
             };
 
 
-            /* =====================================================
-               EXCEL
-               ===================================================== */
+            /* EXCEL */
 
             const exportExcel = () => {
 
@@ -990,9 +981,7 @@
             };
 
 
-            /* =====================================================
-               YAZDIR
-               ===================================================== */
+            /* YAZDIR */
 
             const triggerPrint = () => {
 
@@ -1009,10 +998,6 @@
 
             };
 
-
-            /* =====================================================
-               VUE RETURN
-               ===================================================== */
 
             return {
 
