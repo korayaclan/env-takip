@@ -39,7 +39,6 @@
             overflow: hidden;
         }
 
-        /* Sadece ana içerik gerektiğinde kayar */
         .app-main {
             min-height: 0;
             overflow-y: auto;
@@ -47,7 +46,6 @@
             overscroll-behavior: contain;
         }
 
-        /* Mobil cihazlarda viewport yüksekliği */
         @media (max-width: 640px) {
             #app {
                 height: 100dvh;
@@ -188,7 +186,6 @@
 
             </button>
 
-
             <div
                 v-show="showYear"
                 class="grid grid-cols-6 gap-1 mt-2.5 pt-2.5 border-t border-slate-100">
@@ -220,10 +217,7 @@
             @submit.prevent="addItem"
             class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 space-y-3">
 
-
-            <!-- =================================================
-                 EMANET NO
-                 ================================================= -->
+            <!-- EMANET NO -->
 
             <div class="space-y-1">
 
@@ -253,7 +247,6 @@
 
                 </div>
 
-
                 <div class="flex border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
 
                     <input
@@ -279,9 +272,7 @@
             </div>
 
 
-            <!-- =================================================
-                 SORUŞTURMA NO
-                 ================================================= -->
+            <!-- SORUŞTURMA NO -->
 
             <div class="space-y-1">
 
@@ -311,7 +302,6 @@
 
                 </div>
 
-
                 <div class="flex border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
 
                     <input
@@ -336,9 +326,7 @@
             </div>
 
 
-            <!-- =================================================
-                 KAYDET
-                 ================================================= -->
+            <!-- KAYDET -->
 
             <button
                 type="submit"
@@ -349,9 +337,7 @@
             </button>
 
 
-            <!-- =================================================
-                 EMANET TÜRÜ AKORDİYON
-                 ================================================= -->
+            <!-- EMANET TÜRÜ -->
 
             <div class="border-t border-slate-100 pt-2.5">
 
@@ -373,7 +359,6 @@
                     </i>
 
                 </button>
-
 
                 <div
                     v-show="showType"
@@ -414,7 +399,6 @@
 
             </div>
 
-
             <div
                 v-for="item in items"
                 :key="item.id"
@@ -439,7 +423,6 @@
 
                     </div>
 
-
                     <p class="text-[11px] text-slate-500 font-mono">
 
                         {{ item.dosyaYil }}/{{ item.dosyaNo }}
@@ -448,7 +431,6 @@
                     </p>
 
                 </div>
-
 
                 <button
                     type="button"
@@ -472,8 +454,16 @@
 
     <div class="print-only p-4">
 
-        <h2 style="text-align:center; font-weight:bold; font-size:14px; margin-bottom:10px;">
+        <h2
+            style="
+                text-align:center;
+                font-weight:bold;
+                font-size:14px;
+                margin-bottom:10px;
+            ">
+
             EMANET ENVANTER & İMHA KONTROL LİSTESİ
+
         </h2>
 
 
@@ -483,28 +473,70 @@
 
                 <tr>
 
-                    <th style="width:30px; text-align:center;">
-                        S.No
+                    <th
+                        style="
+                            width:42px;
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
+                        Sıra No.
+
                     </th>
 
-                    <th style="width:110px;">
+                    <th
+                        style="
+                            width:105px;
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
                         Emanet No
+
                     </th>
 
-                    <th style="width:140px;">
+                    <th
+                        style="
+                            width:135px;
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
                         Soruşturma / Esas
+
                     </th>
 
-                    <th style="width:70px; text-align:center;">
+                    <th
+                        style="
+                            width:65px;
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
                         Karar Yılı
+
                     </th>
 
-                    <th style="width:90px;">
+                    <th
+                        style="
+                            width:80px;
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
                         Emanet Türü
+
                     </th>
 
-                    <th style="width:60px; text-align:center;">
-                        Kontrol
+                    <th
+                        style="
+                            width:105px;
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
+                        Sonuç
+
                     </th>
 
                 </tr>
@@ -518,31 +550,69 @@
                     v-for="(item, idx) in items"
                     :key="'p-'+item.id">
 
-                    <td style="text-align:center;">
+                    <td
+                        style="
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
                         {{ idx + 1 }}
+
                     </td>
 
-                    <td style="font-family:monospace; font-weight:bold;">
+                    <td
+                        style="
+                            font-family:monospace;
+                            font-weight:bold;
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
                         {{ item.emanetYil }}/{{ item.emanetNo }}
+
                     </td>
 
-                    <td style="font-family:monospace;">
+                    <td
+                        style="
+                            font-family:monospace;
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
                         {{ item.dosyaYil }}/{{ item.dosyaNo }}
+
                     </td>
 
-                    <td style="text-align:center; font-family:monospace;">
+                    <td
+                        style="
+                            text-align:center;
+                            font-family:monospace;
+                            vertical-align:middle;
+                        ">
+
                         {{ item.kararYili }}
+
                     </td>
 
-                    <td>
+                    <td
+                        style="
+                            text-align:center;
+                            vertical-align:middle;
+                        ">
+
                         {{ item.materyalTuru }}
+
                     </td>
 
-                    <td style="text-align:center;">
+                    <td
+                        style="
+                            text-align:center;
+                            vertical-align:middle;
+                            white-space:nowrap;
+                            font-size:10px;
+                        ">
 
-                        <div
-                            style="width:14px; height:14px; border:1px solid #000; margin:auto;">
-                        </div>
+                        ☐ İmha&nbsp;&nbsp;&nbsp;☐ İmha Değil
 
                     </td>
 
@@ -569,11 +639,15 @@
             ">
 
             <div style="font-weight:bold;">
+
                 Toplam Kayıt: {{ items.length }}
+
             </div>
 
             <div>
+
                 Kontrol Tarihi: {{ printDate }}
+
             </div>
 
         </div>
@@ -759,14 +833,10 @@
                 });
 
 
-                /* Inputları temizle */
-
                 form.value.emanetNo = '';
 
                 form.value.dosyaNo = '';
 
-
-                /* Emanet No alanına geri dön */
 
                 if (emanetInput.value) {
 
@@ -810,7 +880,7 @@
                     items.value.map(
                         (item, idx) => ({
 
-                            'S.No':
+                            'Sıra No.':
                                 idx + 1,
 
                             'Karar Yılı':
