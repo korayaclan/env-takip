@@ -62,6 +62,7 @@
            ========================================================= */
 
         @media print {
+
             html,
             body {
                 height: auto !important;
@@ -86,21 +87,66 @@
                 color: #000 !important;
             }
 
+            /*
+             * Tablo A4 yazdırma alanına tam oturur.
+             * Sabit genişlik yerine yüzde kullanıyoruz.
+             */
             table {
                 width: 100%;
+                max-width: 100%;
                 border-collapse: collapse;
                 table-layout: fixed;
+                margin: 0 auto;
             }
 
             th,
             td {
                 border: 1px solid #333;
-                padding: 6px;
+                padding: 6px 4px;
                 font-size: 11px;
+                vertical-align: middle;
+                box-sizing: border-box;
+                overflow-wrap: break-word;
+                word-break: normal;
             }
 
             th {
                 background-color: #f3f4f6;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            /*
+             * Sonuç alanında yazının sağa taşmasını önler.
+             */
+            .result-cell {
+                text-align: center;
+                white-space: normal;
+                font-size: 10px;
+                line-height: 1.4;
+            }
+
+            /*
+             * Alt bilgiler artık çizgisiz ve ferah.
+             */
+            .print-footer {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                column-gap: 70px;
+                align-items: center;
+                margin-top: 12px;
+                padding-top: 0;
+                border-top: none;
+                font-size: 11px;
+            }
+
+            .print-footer-left {
+                text-align: left;
+                font-weight: bold;
+            }
+
+            .print-footer-right {
+                text-align: right;
             }
         }
 
@@ -110,9 +156,12 @@
     </style>
 </head>
 
+
 <body class="bg-slate-100">
 
-<div id="app" class="max-w-md mx-auto h-[100dvh] flex flex-col overflow-hidden">
+<div id="app"
+     class="max-w-md mx-auto h-[100dvh] flex flex-col overflow-hidden">
+
 
     <!-- =========================================================
          HEADER
@@ -152,6 +201,7 @@
             </button>
 
         </div>
+
     </header>
 
 
@@ -160,6 +210,7 @@
          ========================================================= -->
 
     <main class="app-main flex-1 min-h-0 p-3 space-y-3 no-print">
+
 
         <!-- =====================================================
              KARAR YILI AKORDİYON
@@ -174,6 +225,7 @@
 
                 <span>
                     Karar / Grup Yılı:
+
                     <strong class="text-indigo-600 font-mono text-sm">
                         {{ form.kararYili }}
                     </strong>
@@ -185,6 +237,7 @@
                 </i>
 
             </button>
+
 
             <div
                 v-show="showYear"
@@ -217,7 +270,10 @@
             @submit.prevent="addItem"
             class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 space-y-3">
 
-            <!-- EMANET NO -->
+
+            <!-- =================================================
+                 EMANET NO
+                 ================================================= -->
 
             <div class="space-y-1">
 
@@ -247,7 +303,9 @@
 
                 </div>
 
-                <div class="flex border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
+
+                <div
+                    class="flex border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
 
                     <input
                         type="text"
@@ -272,7 +330,9 @@
             </div>
 
 
-            <!-- SORUŞTURMA NO -->
+            <!-- =================================================
+                 SORUŞTURMA NO
+                 ================================================= -->
 
             <div class="space-y-1">
 
@@ -302,7 +362,9 @@
 
                 </div>
 
-                <div class="flex border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
+
+                <div
+                    class="flex border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
 
                     <input
                         type="text"
@@ -326,7 +388,9 @@
             </div>
 
 
-            <!-- KAYDET -->
+            <!-- =================================================
+                 KAYDET BUTONU
+                 ================================================= -->
 
             <button
                 type="submit"
@@ -337,7 +401,9 @@
             </button>
 
 
-            <!-- EMANET TÜRÜ -->
+            <!-- =================================================
+                 EMANET TÜRÜ
+                 ================================================= -->
 
             <div class="border-t border-slate-100 pt-2.5">
 
@@ -348,6 +414,7 @@
 
                     <span>
                         Emanet Türü:
+
                         <strong class="text-blue-600">
                             {{ form.materyalTuru }}
                         </strong>
@@ -359,6 +426,7 @@
                     </i>
 
                 </button>
+
 
                 <div
                     v-show="showType"
@@ -399,6 +467,7 @@
 
             </div>
 
+
             <div
                 v-for="item in items"
                 :key="item.id"
@@ -415,13 +484,15 @@
 
                         </span>
 
-                        <span class="font-bold text-xs text-slate-900 font-mono">
+                        <span
+                            class="font-bold text-xs text-slate-900 font-mono">
 
                             {{ item.emanetYil }}/{{ item.emanetNo }}
 
                         </span>
 
                     </div>
+
 
                     <p class="text-[11px] text-slate-500 font-mono">
 
@@ -431,6 +502,7 @@
                     </p>
 
                 </div>
+
 
                 <button
                     type="button"
@@ -454,12 +526,17 @@
 
     <div class="print-only p-4">
 
+
+        <!-- =====================================================
+             BAŞLIK
+             ===================================================== -->
+
         <h2
             style="
                 text-align:center;
                 font-weight:bold;
                 font-size:14px;
-                margin-bottom:10px;
+                margin:0 0 10px 0;
             ">
 
             EMANET ENVANTER & İMHA KONTROL LİSTESİ
@@ -467,73 +544,64 @@
         </h2>
 
 
+        <!-- =====================================================
+             TABLO
+             ===================================================== -->
+
         <table>
 
             <thead>
 
                 <tr>
 
-                    <th
-                        style="
-                            width:42px;
-                            text-align:center;
-                            vertical-align:middle;
-                        ">
+                    <!-- %7 -->
+
+                    <th style="width:7%;">
 
                         Sıra No.
 
                     </th>
 
-                    <th
-                        style="
-                            width:105px;
-                            text-align:center;
-                            vertical-align:middle;
-                        ">
+
+                    <!-- %17 -->
+
+                    <th style="width:17%;">
 
                         Emanet No
 
                     </th>
 
-                    <th
-                        style="
-                            width:135px;
-                            text-align:center;
-                            vertical-align:middle;
-                        ">
+
+                    <!-- %23 -->
+
+                    <th style="width:23%;">
 
                         Soruşturma / Esas
 
                     </th>
 
-                    <th
-                        style="
-                            width:65px;
-                            text-align:center;
-                            vertical-align:middle;
-                        ">
+
+                    <!-- %11 -->
+
+                    <th style="width:11%;">
 
                         Karar Yılı
 
                     </th>
 
-                    <th
-                        style="
-                            width:80px;
-                            text-align:center;
-                            vertical-align:middle;
-                        ">
+
+                    <!-- %12 -->
+
+                    <th style="width:12%;">
 
                         Emanet Türü
 
                     </th>
 
-                    <th
-                        style="
-                            width:105px;
-                            text-align:center;
-                            vertical-align:middle;
-                        ">
+
+                    <!-- %30 -->
+
+                    <th style="width:30%;">
 
                         Sonuç
 
@@ -550,67 +618,68 @@
                     v-for="(item, idx) in items"
                     :key="'p-'+item.id">
 
-                    <td
-                        style="
-                            text-align:center;
-                            vertical-align:middle;
-                        ">
+
+                    <!-- SIRA -->
+
+                    <td style="text-align:center;">
 
                         {{ idx + 1 }}
 
                     </td>
 
+
+                    <!-- EMANET -->
+
                     <td
                         style="
+                            text-align:center;
                             font-family:monospace;
                             font-weight:bold;
-                            text-align:center;
-                            vertical-align:middle;
                         ">
 
                         {{ item.emanetYil }}/{{ item.emanetNo }}
 
                     </td>
 
+
+                    <!-- SORUŞTURMA -->
+
                     <td
                         style="
-                            font-family:monospace;
                             text-align:center;
-                            vertical-align:middle;
+                            font-family:monospace;
                         ">
 
                         {{ item.dosyaYil }}/{{ item.dosyaNo }}
 
                     </td>
 
+
+                    <!-- KARAR YILI -->
+
                     <td
                         style="
                             text-align:center;
                             font-family:monospace;
-                            vertical-align:middle;
                         ">
 
                         {{ item.kararYili }}
 
                     </td>
 
-                    <td
-                        style="
-                            text-align:center;
-                            vertical-align:middle;
-                        ">
+
+                    <!-- EMANET TÜRÜ -->
+
+                    <td style="text-align:center;">
 
                         {{ item.materyalTuru }}
 
                     </td>
 
-                    <td
-                        style="
-                            text-align:center;
-                            vertical-align:middle;
-                            white-space:nowrap;
-                            font-size:10px;
-                        ">
+
+                    <!-- SONUÇ -->
+
+                    <td class="result-cell">
 
                         ☐ İmha&nbsp;&nbsp;&nbsp;☐ İmha Değil
 
@@ -624,27 +693,19 @@
 
 
         <!-- =====================================================
-             YAZDIRMA ALT BİLGİSİ
+             ALT BİLGİ
              ===================================================== -->
 
-        <div
-            style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                margin-top:10px;
-                padding-top:6px;
-                border-top:1px solid #333;
-                font-size:11px;
-            ">
+        <div class="print-footer">
 
-            <div style="font-weight:bold;">
+            <div class="print-footer-left">
 
                 Toplam Kayıt: {{ items.length }}
 
             </div>
 
-            <div>
+
+            <div class="print-footer-right">
 
                 Kontrol Tarihi: {{ printDate }}
 
@@ -674,6 +735,7 @@
     createApp({
 
         setup() {
+
 
             /* =====================================================
                YILLAR
@@ -707,6 +769,7 @@
                ===================================================== */
 
             const showYear = ref(false);
+
             const showType = ref(false);
 
 
@@ -747,7 +810,7 @@
 
 
             /* =====================================================
-               KARAR YILI
+               KARAR YILI DEĞİŞTİR
                ===================================================== */
 
             const setKararYili = (yr) => {
@@ -764,7 +827,7 @@
 
 
             /* =====================================================
-               LOCAL STORAGE'DAN VERİLERİ YÜKLE
+               LOCAL STORAGE'DAN YÜKLE
                ===================================================== */
 
             onMounted(() => {
@@ -772,11 +835,13 @@
                 const db =
                     localStorage.getItem('emanet_lite_db');
 
+
                 if (db) {
 
                     try {
 
-                        items.value = JSON.parse(db);
+                        items.value =
+                            JSON.parse(db);
 
                     } catch (error) {
 
@@ -819,7 +884,7 @@
 
 
             /* =====================================================
-               YENİ KAYIT EKLE
+               KAYIT EKLE
                ===================================================== */
 
             const addItem = () => {
@@ -862,7 +927,7 @@
 
 
             /* =====================================================
-               EXCEL AKTAR
+               EXCEL
                ===================================================== */
 
             const exportExcel = () => {
@@ -939,13 +1004,14 @@
 
                 }
 
+
                 window.print();
 
             };
 
 
             /* =====================================================
-               VUE'YA AÇILAN DEĞERLER
+               VUE RETURN
                ===================================================== */
 
             return {
