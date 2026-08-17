@@ -2,15 +2,22 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Emanet Envanter Sistemi</title>
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Vue -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
+    <!-- Font Awesome -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -24,23 +31,28 @@
         body {
             margin: 0;
             padding: 0;
-            width: 100%;
             min-height: 100%;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden;
+            background: #f1f5f9;
+        }
+
+        button,
+        input {
+            font-family: inherit;
         }
 
         .print-only {
             display: none;
         }
 
-        /* ================================
+
+        /* =========================================================
            YAZDIRMA / PDF
-           ================================ */
+           ========================================================= */
 
         @media print {
 
@@ -52,8 +64,8 @@
             html,
             body {
                 width: 100%;
-                margin: 0 !important;
-                padding: 0 !important;
+                margin: 0;
+                padding: 0;
                 background: #fff !important;
                 color: #000 !important;
             }
@@ -68,38 +80,47 @@
 
             .print-only {
                 display: block !important;
+            }
+
+            #app {
                 width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
+                max-width: none !important;
+                min-height: 0 !important;
+                margin: 0 auto !important;
             }
 
-            .print-wrapper {
+
+            /* PDF ana alanı */
+            .print-page {
                 width: 100%;
+                max-width: 100%;
                 margin: 0 auto;
+                padding: 8mm 0 0 0;
             }
 
+
+            /* Başlık */
             .print-title {
-                width: 100%;
                 text-align: center;
                 font-weight: 700;
                 font-size: 14px;
-                margin: 0 0 8px 0;
-                padding: 0;
+                line-height: 1.2;
+                margin: 0 0 7mm 0;
+                white-space: nowrap;
             }
 
-            /*
-             * TABLO
-             *
-             * Colgroup ile sütunlar doğrudan sabitleniyor.
-             * Toplam = %100
-             */
+
+            /* =====================================================
+               TABLO
+               ===================================================== */
+
             .print-table {
-                width: 100% !important;
-                max-width: 100% !important;
-                table-layout: fixed !important;
-                border-collapse: collapse !important;
-                border-spacing: 0 !important;
-                margin: 0 auto !important;
+                width: 100%;
+                max-width: 100%;
+                border-collapse: collapse;
+                border-spacing: 0;
+                table-layout: fixed;
+                margin: 0 auto;
             }
 
             .print-table col:nth-child(1) {
@@ -126,16 +147,18 @@
                 width: 23%;
             }
 
+
             .print-table th,
             .print-table td {
                 border: 1px solid #333;
                 padding: 5px 4px;
-                font-size: 10px;
-                line-height: 1.2;
-                vertical-align: middle;
+                font-size: 10.5px;
+                line-height: 1.25;
                 text-align: center;
-                overflow: hidden;
+                vertical-align: middle;
+                box-sizing: border-box;
             }
+
 
             .print-table th {
                 background-color: #f3f4f6;
@@ -143,47 +166,70 @@
                 white-space: nowrap;
             }
 
+
             .print-table td {
                 white-space: nowrap;
             }
 
-            .print-table td.emanet-no,
-            .print-table td.dosya-no,
-            .print-table td.karar-yili {
+
+            /* Sayı ve numaralar */
+            .print-table .mono {
                 font-family: monospace;
+                font-weight: 600;
             }
 
+
+            /* Sonuç alanı */
             .result-cell {
                 white-space: nowrap !important;
-                font-size: 9.5px !important;
-                text-align: center !important;
+                font-size: 10px !important;
+                padding-left: 3px !important;
+                padding-right: 3px !important;
             }
 
             .result-option {
                 display: inline-block;
-                margin: 0 2px;
                 white-space: nowrap;
             }
 
-            /*
-             * Alt bilgi
-             */
+            .result-option + .result-option {
+                margin-left: 7px;
+            }
+
+
+            /* Sayfa bölünürken tablo satırları bölünmesin */
+            .print-table tr {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .print-table thead {
+                display: table-header-group;
+            }
+
+
+            /* =====================================================
+               ALT BİLGİ
+               ===================================================== */
+
             .print-footer {
                 width: 100%;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-top: 10px;
+
+                margin-top: 5mm;
                 padding: 0;
-                font-size: 10px;
+
+                font-size: 10.5px;
                 font-weight: 600;
             }
 
-            .total-records {
+            .print-total {
                 text-align: left;
             }
 
-            .control-date {
+            .print-date {
                 text-align: right;
             }
         }
@@ -192,13 +238,15 @@
 </head>
 
 
-<body class="bg-slate-100 pb-12">
+<body>
 
-<div id="app" class="max-w-md mx-auto min-h-screen flex flex-col">
+<div id="app"
+     class="max-w-md mx-auto min-h-screen flex flex-col">
 
-    <!-- ==========================================
+
+    <!-- =========================================================
          HEADER
-         ========================================== -->
+         ========================================================= -->
 
     <header
         class="bg-slate-900 text-white p-3.5 sticky top-0 z-50 shadow-md no-print flex justify-between items-center">
@@ -213,6 +261,7 @@
             </p>
         </div>
 
+
         <div class="flex gap-1.5">
 
             <button
@@ -223,6 +272,7 @@
                 Excel
 
             </button>
+
 
             <button
                 @click="triggerPrint"
@@ -238,15 +288,20 @@
     </header>
 
 
-    <!-- ==========================================
-         ANA FORM
-         ========================================== -->
+
+    <!-- =========================================================
+         ANA UYGULAMA
+         ========================================================= -->
 
     <main class="p-3 space-y-3 no-print">
 
-        <!-- KARAR YILI -->
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
+        <!-- =====================================================
+             KARAR / GRUP YILI
+             ===================================================== -->
+
+        <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
 
             <button
                 type="button"
@@ -256,10 +311,14 @@
                 <span>
                     Karar / Grup Yılı:
 
-                    <strong class="text-indigo-600 font-mono text-sm">
+                    <strong
+                        class="text-indigo-600 font-mono text-sm">
+
                         {{ form.kararYili }}
+
                     </strong>
                 </span>
+
 
                 <i
                     :class="showYear ? 'fa-chevron-up' : 'fa-chevron-down'"
@@ -278,9 +337,11 @@
                     :key="'grp-'+y"
                     type="button"
                     @click="setKararYili(y)"
+
                     :class="form.kararYili === y
                         ? 'bg-indigo-600 text-white font-bold'
                         : 'bg-slate-50 text-slate-700 border'"
+
                     class="py-1.5 text-xs rounded-lg font-mono transition">
 
                     {{ y }}
@@ -292,9 +353,10 @@
         </div>
 
 
-        <!-- ==========================================
+
+        <!-- =====================================================
              HIZLI FORM
-             ========================================== -->
+             ===================================================== -->
 
         <form
             @submit.prevent="addItem"
@@ -307,9 +369,13 @@
 
                 <div class="flex justify-between items-center">
 
-                    <label class="text-[11px] font-bold text-slate-600 uppercase">
+                    <label
+                        class="text-[11px] font-bold text-slate-600 uppercase">
+
                         Emanet No
+
                     </label>
+
 
                     <div class="flex gap-1">
 
@@ -317,16 +383,20 @@
                             type="button"
                             v-for="yOff in [0,1,2,3]"
                             :key="'ey-'+yOff"
+
                             @click="
                                 form.emanetYil =
                                 (parseInt(form.kararYili || 2013) - yOff).toString()
                             "
+
                             :class="
                                 form.emanetYil ===
                                 (parseInt(form.kararYili || 2013) - yOff).toString()
+
                                 ? 'bg-blue-600 text-white font-bold'
                                 : 'bg-slate-100 text-slate-600'
                             "
+
                             class="px-1.5 py-0.5 text-[10px] rounded font-mono">
 
                             {{ parseInt(form.kararYili || 2013) - yOff }}
@@ -347,6 +417,7 @@
                         pattern="[0-9]*"
                         v-model="form.emanetYil"
                         required
+
                         class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
 
 
@@ -358,6 +429,7 @@
                         placeholder="No (Örn: 1522)"
                         required
                         ref="emanetInput"
+
                         class="flex-1 p-2 text-sm font-mono outline-none">
 
                 </div>
@@ -365,15 +437,22 @@
             </div>
 
 
-            <!-- SORUŞTURMA NO -->
+
+            <!-- =================================================
+                 SORUŞTURMA / ESAS NO
+                 ================================================= -->
 
             <div class="space-y-1">
 
                 <div class="flex justify-between items-center">
 
-                    <label class="text-[11px] font-bold text-slate-600 uppercase">
+                    <label
+                        class="text-[11px] font-bold text-slate-600 uppercase">
+
                         Soruşturma / Esas No
+
                     </label>
+
 
                     <div class="flex gap-1">
 
@@ -381,16 +460,20 @@
                             type="button"
                             v-for="yOff in [0,1,2,3]"
                             :key="'sy-'+yOff"
+
                             @click="
                                 form.dosyaYil =
                                 (parseInt(form.kararYili || 2013) - yOff).toString()
                             "
+
                             :class="
                                 form.dosyaYil ===
                                 (parseInt(form.kararYili || 2013) - yOff).toString()
+
                                 ? 'bg-blue-600 text-white font-bold'
                                 : 'bg-slate-100 text-slate-600'
                             "
+
                             class="px-1.5 py-0.5 text-[10px] rounded font-mono">
 
                             {{ parseInt(form.kararYili || 2013) - yOff }}
@@ -411,6 +494,7 @@
                         pattern="[0-9]*"
                         v-model="form.dosyaYil"
                         required
+
                         class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
 
 
@@ -421,6 +505,7 @@
                         v-model="form.dosyaNo"
                         placeholder="No (Örn: 25411)"
                         required
+
                         class="flex-1 p-2 text-sm font-mono outline-none">
 
                 </div>
@@ -428,10 +513,14 @@
             </div>
 
 
-            <!-- KAYDET -->
+
+            <!-- =================================================
+                 KAYDET
+                 ================================================= -->
 
             <button
                 type="submit"
+
                 class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-blue-500/20 text-sm transition">
 
                 KAYDET VE LİSTEYE EKLE
@@ -439,13 +528,17 @@
             </button>
 
 
-            <!-- EMANET TÜRÜ -->
+
+            <!-- =================================================
+                 EMANET TÜRÜ
+                 ================================================= -->
 
             <div class="border-t border-slate-100 pt-2.5">
 
                 <button
                     type="button"
                     @click="showType = !showType"
+
                     class="w-full flex justify-between items-center text-xs text-slate-600 font-semibold">
 
                     <span>
@@ -455,6 +548,7 @@
                             {{ form.materyalTuru }}
                         </strong>
                     </span>
+
 
                     <i
                         :class="showType ? 'fa-chevron-up' : 'fa-chevron-down'"
@@ -479,16 +573,20 @@
                             'Kutu',
                             'Dijital'
                         ]"
+
                         :key="'tag-'+t"
+
                         @click="
                             form.materyalTuru=t;
                             showType=false
                         "
+
                         :class="
                             form.materyalTuru === t
                             ? 'bg-blue-600 text-white font-bold'
                             : 'bg-slate-100 text-slate-700 border'
                         "
+
                         class="px-2.5 py-1 rounded-lg text-xs transition">
 
                         {{ t }}
@@ -502,14 +600,19 @@
         </form>
 
 
-        <!-- ==========================================
-             KAYIT LİSTESİ
-             ========================================== -->
+
+        <!-- =====================================================
+             LİSTE
+             ===================================================== -->
 
         <div class="space-y-1.5">
 
+
+            <!-- Boş liste -->
+
             <div
                 v-if="items.length === 0"
+
                 class="bg-white p-6 rounded-xl text-center border border-slate-200 text-slate-400 text-xs">
 
                 Henüz kayıt eklenmedi.
@@ -517,14 +620,20 @@
             </div>
 
 
+
+            <!-- Kayıtlar -->
+
             <div
-                v-for="(item, index) in items"
+                v-for="item in items"
                 :key="item.id"
+
                 class="bg-white p-2.5 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm">
+
 
                 <div>
 
-                    <div class="flex items-center gap-1 mb-0.5">
+                    <div
+                        class="flex items-center gap-1 mb-0.5">
 
                         <span
                             class="bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.5 rounded text-[10px] font-mono">
@@ -544,7 +653,8 @@
                     </div>
 
 
-                    <p class="text-[11px] text-slate-500 font-mono">
+                    <p
+                        class="text-[11px] text-slate-500 font-mono">
 
                         {{ item.dosyaYil }}/{{ item.dosyaNo }}
                         ({{ item.materyalTuru }})
@@ -557,6 +667,7 @@
                 <button
                     type="button"
                     @click="deleteItem(item.id)"
+
                     class="text-slate-300 hover:text-rose-500 p-2 text-xs">
 
                     <i class="fa-solid fa-trash-can"></i>
@@ -570,132 +681,170 @@
     </main>
 
 
-    <!-- ==========================================
-         YAZDIRMA / PDF ŞABLONU
-         ========================================== -->
 
-    <div class="print-only">
+    <!-- =========================================================
+         YAZDIRMA ŞABLONU
+         ========================================================= -->
 
-        <div class="print-wrapper">
-
-            <h2 class="print-title">
-                EMANET ENVANTER & İMHA KONTROL LİSTESİ
-            </h2>
+    <div class="print-only print-page">
 
 
-            <table class="print-table">
+        <!-- BAŞLIK -->
 
-                <!-- SÜTUN GENİŞLİKLERİ -->
+        <h2 class="print-title">
 
-                <colgroup>
+            EMANET ENVANTER & İMHA KONTROL LİSTESİ
 
-                    <col style="width:10%">
-                    <col style="width:17%">
-                    <col style="width:22%">
-                    <col style="width:12%">
-                    <col style="width:16%">
-                    <col style="width:23%">
-
-                </colgroup>
+        </h2>
 
 
-                <thead>
 
-                    <tr>
+        <!-- =====================================================
+             SABİT GENİŞLİKLİ TABLO
+             ===================================================== -->
 
-                        <th>
-                            Sıra No.
-                        </th>
+        <table class="print-table">
 
-                        <th>
-                            Emanet No
-                        </th>
+            <colgroup>
 
-                        <th>
-                            Soruşturma / Esas
-                        </th>
+                <col style="width:10%;">
+                <col style="width:17%;">
+                <col style="width:22%;">
+                <col style="width:12%;">
+                <col style="width:16%;">
+                <col style="width:23%;">
 
-                        <th>
-                            Karar Yılı
-                        </th>
-
-                        <th>
-                            Emanet Türü
-                        </th>
-
-                        <th>
-                            Sonuç
-                        </th>
-
-                    </tr>
-
-                </thead>
+            </colgroup>
 
 
-                <tbody>
+            <thead>
 
-                    <tr
-                        v-for="(item, idx) in items"
-                        :key="'p-'+item.id">
+                <tr>
 
-                        <td>
-                            {{ idx + 1 }}
-                        </td>
+                    <th>
+                        Sıra No.
+                    </th>
 
-                        <td class="emanet-no">
-                            {{ item.emanetYil }}/{{ item.emanetNo }}
-                        </td>
+                    <th>
+                        Emanet No
+                    </th>
 
-                        <td class="dosya-no">
-                            {{ item.dosyaYil }}/{{ item.dosyaNo }}
-                        </td>
+                    <th>
+                        Soruşturma / Esas
+                    </th>
 
-                        <td class="karar-yili">
-                            {{ item.kararYili }}
-                        </td>
+                    <th>
+                        Karar Yılı
+                    </th>
 
-                        <td>
-                            {{ item.materyalTuru }}
-                        </td>
+                    <th>
+                        Emanet Türü
+                    </th>
 
-                        <td class="result-cell">
+                    <th>
+                        Sonuç
+                    </th>
 
-                            <span class="result-option">
-                                □ İmha
-                            </span>
+                </tr>
 
-                            <span class="result-option">
-                                □ İmha Değil
-                            </span>
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
+            </thead>
 
 
-            <!-- ALT BİLGİ -->
+            <tbody>
 
-            <div class="print-footer">
-
-                <div class="total-records">
-
-                    Toplam Kayıt: {{ items.length }}
-
-                </div>
+                <tr
+                    v-for="(item, idx) in items"
+                    :key="'p-'+item.id">
 
 
-                <div class="control-date">
+                    <!-- SIRA -->
 
-                    Kontrol Tarihi:
-                    {{ currentDate }}
+                    <td class="mono">
 
-                </div>
+                        {{ idx + 1 }}
+
+                    </td>
+
+
+                    <!-- EMANET -->
+
+                    <td class="mono">
+
+                        {{ item.emanetYil }}/{{ item.emanetNo }}
+
+                    </td>
+
+
+                    <!-- SORUŞTURMA -->
+
+                    <td class="mono">
+
+                        {{ item.dosyaYil }}/{{ item.dosyaNo }}
+
+                    </td>
+
+
+                    <!-- KARAR YILI -->
+
+                    <td class="mono">
+
+                        {{ item.kararYili }}
+
+                    </td>
+
+
+                    <!-- EMANET TÜRÜ -->
+
+                    <td>
+
+                        {{ item.materyalTuru }}
+
+                    </td>
+
+
+                    <!-- SONUÇ -->
+
+                    <td class="result-cell">
+
+                        <span class="result-option">
+                            ☐ İmha
+                        </span>
+
+                        <span class="result-option">
+                            ☐ İmha Değil
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+
+        <!-- =====================================================
+             ALT BİLGİ
+             ===================================================== -->
+
+        <div class="print-footer">
+
+
+            <div class="print-total">
+
+                Toplam Kayıt: {{ items.length }}
 
             </div>
+
+
+            <div class="print-date">
+
+                Kontrol Tarihi:
+                {{ currentDate }}
+
+            </div>
+
 
         </div>
 
@@ -703,6 +852,11 @@
 
 </div>
 
+
+
+<!-- =============================================================
+     VUE
+     ============================================================= -->
 
 <script>
 
@@ -718,9 +872,10 @@
 
         setup() {
 
-            /* ==========================================
+
+            /* =====================================================
                YILLAR
-               ========================================== */
+               ===================================================== */
 
             const targetYears = [
                 '2005',
@@ -738,22 +893,31 @@
             ];
 
 
-            /* ==========================================
-               KAYITLAR
-               ========================================== */
+            /* =====================================================
+               VERİ
+               ===================================================== */
 
             const items = ref([]);
 
 
+            /* =====================================================
+               AKORDİYONLAR
+               ===================================================== */
+
             const showYear = ref(false);
             const showType = ref(false);
+
+
+            /* =====================================================
+               INPUT REFERANSI
+               ===================================================== */
 
             const emanetInput = ref(null);
 
 
-            /* ==========================================
+            /* =====================================================
                FORM
-               ========================================== */
+               ===================================================== */
 
             const form = ref({
 
@@ -770,23 +934,23 @@
             });
 
 
-            /* ==========================================
+            /* =====================================================
                TARİH
-               ========================================== */
+               ===================================================== */
 
-            const now = new Date();
+            const currentDate = new Date().toLocaleDateString(
+                'tr-TR',
+                {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }
+            );
 
-            const currentDate =
-                String(now.getDate()).padStart(2, '0') +
-                '.' +
-                String(now.getMonth() + 1).padStart(2, '0') +
-                '.' +
-                now.getFullYear();
 
-
-            /* ==========================================
+            /* =====================================================
                KARAR YILI DEĞİŞTİR
-               ========================================== */
+               ===================================================== */
 
             const setKararYili = (yr) => {
 
@@ -801,13 +965,9 @@
             };
 
 
-            /* ==========================================
-               VERİLERİ YÜKLE
-               
-               ÖNEMLİ:
-               ID tarih tabanlı olduğu için eski kayıt
-               önce gelecek şekilde sıralıyoruz.
-               ========================================== */
+            /* =====================================================
+               LOCAL STORAGE'DAN YÜKLE
+               ===================================================== */
 
             onMounted(() => {
 
@@ -818,30 +978,16 @@
 
                     try {
 
-                        const loaded =
-                            JSON.parse(db);
-
-                        if (Array.isArray(loaded)) {
-
-                            loaded.sort((a, b) => {
-
-                                return (
-                                    Number(a.id) -
-                                    Number(b.id)
-                                );
-
-                            });
-
-                            items.value = loaded;
-
-                        }
+                        items.value = JSON.parse(db);
 
                     } catch (error) {
 
                         console.error(
-                            'Veri yükleme hatası:',
+                            'Kayıt verisi okunamadı:',
                             error
                         );
+
+                        items.value = [];
 
                     }
 
@@ -850,9 +996,9 @@
             });
 
 
-            /* ==========================================
-               LOCAL STORAGE
-               ========================================== */
+            /* =====================================================
+               LOCAL STORAGE'A KAYDET
+               ===================================================== */
 
             watch(
 
@@ -874,61 +1020,87 @@
             );
 
 
-            /* ==========================================
+            /* =====================================================
                KAYIT EKLE
-               
-               BURADA UN SHIFT YERİNE PUSH VAR.
-               
-               Böylece:
-               İlk eklenen = 1
-               İkinci eklenen = 2
-               Üçüncü eklenen = 3
-               ========================================== */
+               ===================================================== */
 
             const addItem = () => {
 
-                items.value.push({
 
-                    id: Date.now().toString(),
+                const newItem = {
 
-                    ...form.value
+                    id:
+                        Date.now().toString() +
+                        Math.random()
+                            .toString(36)
+                            .substring(2, 8),
 
-                });
+                    kararYili:
+                        form.value.kararYili,
 
+                    emanetYil:
+                        form.value.emanetYil,
+
+                    emanetNo:
+                        form.value.emanetNo,
+
+                    dosyaYil:
+                        form.value.dosyaYil,
+
+                    dosyaNo:
+                        form.value.dosyaNo,
+
+                    materyalTuru:
+                        form.value.materyalTuru
+
+                };
+
+
+                items.value.unshift(newItem);
+
+
+                /* Alanları temizle */
 
                 form.value.emanetNo = '';
 
                 form.value.dosyaNo = '';
 
 
-                if (emanetInput.value) {
+                /* Tekrar emanet numarasına odaklan */
 
-                    emanetInput.value.focus();
+                setTimeout(() => {
 
-                }
+                    if (emanetInput.value) {
+
+                        emanetInput.value.focus();
+
+                    }
+
+                }, 50);
 
             };
 
 
-            /* ==========================================
+            /* =====================================================
                KAYIT SİL
-               ========================================== */
+               ===================================================== */
 
             const deleteItem = (id) => {
 
                 items.value =
                     items.value.filter(
-                        i => i.id !== id
+                        item => item.id !== id
                     );
 
             };
 
 
-            /* ==========================================
+            /* =====================================================
                EXCEL
-               ========================================== */
+               ===================================================== */
 
             const exportExcel = () => {
+
 
                 if (items.value.length === 0) {
 
@@ -943,7 +1115,8 @@
                     items.value.map(
                         (item, idx) => ({
 
-                            'Sıra No': idx + 1,
+                            'Sıra No.':
+                                idx + 1,
 
                             'Karar Yılı':
                                 item.kararYili,
@@ -989,11 +1162,12 @@
             };
 
 
-            /* ==========================================
+            /* =====================================================
                YAZDIR
-               ========================================== */
+               ===================================================== */
 
             const triggerPrint = () => {
+
 
                 if (items.value.length === 0) {
 
@@ -1005,14 +1179,15 @@
 
                 }
 
+
                 window.print();
 
             };
 
 
-            /* ==========================================
-               RETURN
-               ========================================== */
+            /* =====================================================
+               DIŞARI AKTAR
+               ===================================================== */
 
             return {
 
@@ -1021,6 +1196,7 @@
                 items,
 
                 showYear,
+
                 showType,
 
                 form,
