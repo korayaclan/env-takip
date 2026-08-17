@@ -2,65 +2,75 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Emanet Envanter Sistemi</title>
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Vue -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
 
-        /* =====================================================
-           MOBİL UYGULAMA ALANI
-           ===================================================== */
+        * {
+            box-sizing: border-box;
+        }
 
         html,
         body {
-            width: 100%;
-            height: 100%;
             margin: 0;
-            overflow: hidden;
+            padding: 0;
+            min-height: 100%;
         }
 
         body {
-            padding-bottom: 0 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background: #f1f5f9;
         }
 
-        #app {
-            height: 100dvh;
-            min-height: 0 !important;
-            overflow: hidden;
+        button,
+        input {
+            font-family: inherit;
         }
 
-        .app-main {
-            min-height: 0;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
+        .print-only {
+            display: none;
         }
 
 
-        /* =====================================================
-           YAZDIRMA
-           ===================================================== */
+        /* =========================================================
+           YAZDIRMA / PDF
+           ========================================================= */
 
         @media print {
 
-            html,
-            body {
-                height: auto !important;
-                overflow: visible !important;
+            @page {
+                size: A4 portrait;
+                margin: 12mm;
             }
 
-            #app {
-                height: auto !important;
+            html,
+            body {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background: #fff !important;
+                color: #000 !important;
+            }
+
+            body {
                 overflow: visible !important;
             }
 
@@ -72,127 +82,176 @@
                 display: block !important;
             }
 
-            body {
-                background: #fff !important;
-                color: #000 !important;
+            #app {
+                width: 100% !important;
+                max-width: none !important;
+                min-height: 0 !important;
+                margin: 0 auto !important;
             }
 
 
-            /* -------------------------------------------------
-               TABLO
-               ------------------------------------------------- */
+            /* PDF ana alanı */
+            .print-page {
+                width: 100%;
+                max-width: 100%;
+                margin: 0 auto;
+                padding: 8mm 0 0 0;
+            }
 
-            table {
+
+            /* Başlık */
+            .print-title {
+                text-align: center;
+                font-weight: 700;
+                font-size: 14px;
+                line-height: 1.2;
+                margin: 0 0 7mm 0;
+                white-space: nowrap;
+            }
+
+
+            /* =====================================================
+               TABLO
+               ===================================================== */
+
+            .print-table {
                 width: 100%;
                 max-width: 100%;
                 border-collapse: collapse;
+                border-spacing: 0;
                 table-layout: fixed;
                 margin: 0 auto;
             }
 
+            .print-table col:nth-child(1) {
+                width: 10%;
+            }
 
-            th,
-            td {
+            .print-table col:nth-child(2) {
+                width: 17%;
+            }
+
+            .print-table col:nth-child(3) {
+                width: 22%;
+            }
+
+            .print-table col:nth-child(4) {
+                width: 12%;
+            }
+
+            .print-table col:nth-child(5) {
+                width: 16%;
+            }
+
+            .print-table col:nth-child(6) {
+                width: 23%;
+            }
+
+
+            .print-table th,
+            .print-table td {
                 border: 1px solid #333;
-                padding: 6px 4px;
-                font-size: 11px;
+                padding: 5px 4px;
+                font-size: 10.5px;
+                line-height: 1.25;
+                text-align: center;
                 vertical-align: middle;
                 box-sizing: border-box;
             }
 
 
-            /*
-             * BAŞLIKLARDA KELİME BÖLÜNMESİN.
-             *
-             * Önceki sürümde taşmayı engellemek için
-             * overflow-wrap / word-break kullanılıyordu.
-             *
-             * Burada özellikle başlıklarda kaldırıyoruz.
-             */
-            th {
+            .print-table th {
                 background-color: #f3f4f6;
-                text-align: center;
-                font-weight: bold;
+                font-weight: 700;
                 white-space: nowrap;
-                word-break: normal;
-                overflow-wrap: normal;
             }
 
 
-            /*
-             * Veri hücreleri gerektiğinde normal şekilde
-             * davranabilir.
-             */
-            td {
-                word-break: normal;
-                overflow-wrap: normal;
+            .print-table td {
+                white-space: nowrap;
             }
 
 
-            /* -------------------------------------------------
-               SONUÇ SÜTUNU
-               ------------------------------------------------- */
+            /* Sayı ve numaralar */
+            .print-table .mono {
+                font-family: monospace;
+                font-weight: 600;
+            }
 
+
+            /* Sonuç alanı */
             .result-cell {
-                text-align: center;
+                white-space: nowrap !important;
+                font-size: 10px !important;
+                padding-left: 3px !important;
+                padding-right: 3px !important;
+            }
+
+            .result-option {
+                display: inline-block;
                 white-space: nowrap;
-                font-size: 10px;
-                line-height: 1.4;
+            }
+
+            .result-option + .result-option {
+                margin-left: 7px;
             }
 
 
-            /* -------------------------------------------------
+            /* Sayfa bölünürken tablo satırları bölünmesin */
+            .print-table tr {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .print-table thead {
+                display: table-header-group;
+            }
+
+
+            /* =====================================================
                ALT BİLGİ
-               ------------------------------------------------- */
+               ===================================================== */
 
             .print-footer {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                column-gap: 70px;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
                 align-items: center;
 
-                margin-top: 12px;
-                padding-top: 0;
+                margin-top: 5mm;
+                padding: 0;
 
-                border-top: none;
-
-                font-size: 11px;
+                font-size: 10.5px;
+                font-weight: 600;
             }
 
-            .print-footer-left {
+            .print-total {
                 text-align: left;
-                font-weight: bold;
             }
 
-            .print-footer-right {
+            .print-date {
                 text-align: right;
             }
-        }
-
-
-        .print-only {
-            display: none;
         }
 
     </style>
 </head>
 
 
-<body class="bg-slate-100">
+<body>
 
 <div id="app"
-     class="max-w-md mx-auto h-[100dvh] flex flex-col overflow-hidden">
+     class="max-w-md mx-auto min-h-screen flex flex-col">
 
 
-    <!-- =====================================================
+    <!-- =========================================================
          HEADER
-         ===================================================== -->
+         ========================================================= -->
 
     <header
-        class="bg-slate-900 text-white p-3.5 sticky top-0 z-50 shadow-md no-print flex justify-between items-center flex-shrink-0">
+        class="bg-slate-900 text-white p-3.5 sticky top-0 z-50 shadow-md no-print flex justify-between items-center">
 
         <div>
-
             <h1 class="font-bold text-base leading-tight">
                 Envanter Takip
             </h1>
@@ -200,7 +259,6 @@
             <p class="text-[10px] text-slate-400">
                 Saha Kayıt Modülü
             </p>
-
         </div>
 
 
@@ -230,16 +288,20 @@
     </header>
 
 
-    <!-- =====================================================
-         ANA İÇERİK
-         ===================================================== -->
 
-    <main class="app-main flex-1 min-h-0 p-3 space-y-3 no-print">
+    <!-- =========================================================
+         ANA UYGULAMA
+         ========================================================= -->
+
+    <main class="p-3 space-y-3 no-print">
 
 
-        <!-- KARAR YILI -->
+        <!-- =====================================================
+             KARAR / GRUP YILI
+             ===================================================== -->
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
+        <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 p-3">
 
             <button
                 type="button"
@@ -249,8 +311,11 @@
                 <span>
                     Karar / Grup Yılı:
 
-                    <strong class="text-indigo-600 font-mono text-sm">
+                    <strong
+                        class="text-indigo-600 font-mono text-sm">
+
                         {{ form.kararYili }}
+
                     </strong>
                 </span>
 
@@ -272,9 +337,11 @@
                     :key="'grp-'+y"
                     type="button"
                     @click="setKararYili(y)"
+
                     :class="form.kararYili === y
                         ? 'bg-indigo-600 text-white font-bold'
                         : 'bg-slate-50 text-slate-700 border'"
+
                     class="py-1.5 text-xs rounded-lg font-mono transition">
 
                     {{ y }}
@@ -284,6 +351,7 @@
             </div>
 
         </div>
+
 
 
         <!-- =====================================================
@@ -301,8 +369,11 @@
 
                 <div class="flex justify-between items-center">
 
-                    <label class="text-[11px] font-bold text-slate-600 uppercase">
+                    <label
+                        class="text-[11px] font-bold text-slate-600 uppercase">
+
                         Emanet No
+
                     </label>
 
 
@@ -312,10 +383,20 @@
                             type="button"
                             v-for="yOff in [0,1,2,3]"
                             :key="'ey-'+yOff"
-                            @click="form.emanetYil = (parseInt(form.kararYili || 2013) - yOff).toString()"
-                            :class="form.emanetYil === (parseInt(form.kararYili || 2013) - yOff).toString()
+
+                            @click="
+                                form.emanetYil =
+                                (parseInt(form.kararYili || 2013) - yOff).toString()
+                            "
+
+                            :class="
+                                form.emanetYil ===
+                                (parseInt(form.kararYili || 2013) - yOff).toString()
+
                                 ? 'bg-blue-600 text-white font-bold'
-                                : 'bg-slate-100 text-slate-600'"
+                                : 'bg-slate-100 text-slate-600'
+                            "
+
                             class="px-1.5 py-0.5 text-[10px] rounded font-mono">
 
                             {{ parseInt(form.kararYili || 2013) - yOff }}
@@ -336,6 +417,7 @@
                         pattern="[0-9]*"
                         v-model="form.emanetYil"
                         required
+
                         class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
 
 
@@ -347,6 +429,7 @@
                         placeholder="No (Örn: 1522)"
                         required
                         ref="emanetInput"
+
                         class="flex-1 p-2 text-sm font-mono outline-none">
 
                 </div>
@@ -354,14 +437,20 @@
             </div>
 
 
-            <!-- SORUŞTURMA -->
+
+            <!-- =================================================
+                 SORUŞTURMA / ESAS NO
+                 ================================================= -->
 
             <div class="space-y-1">
 
                 <div class="flex justify-between items-center">
 
-                    <label class="text-[11px] font-bold text-slate-600 uppercase">
+                    <label
+                        class="text-[11px] font-bold text-slate-600 uppercase">
+
                         Soruşturma / Esas No
+
                     </label>
 
 
@@ -371,10 +460,20 @@
                             type="button"
                             v-for="yOff in [0,1,2,3]"
                             :key="'sy-'+yOff"
-                            @click="form.dosyaYil = (parseInt(form.kararYili || 2013) - yOff).toString()"
-                            :class="form.dosyaYil === (parseInt(form.kararYili || 2013) - yOff).toString()
+
+                            @click="
+                                form.dosyaYil =
+                                (parseInt(form.kararYili || 2013) - yOff).toString()
+                            "
+
+                            :class="
+                                form.dosyaYil ===
+                                (parseInt(form.kararYili || 2013) - yOff).toString()
+
                                 ? 'bg-blue-600 text-white font-bold'
-                                : 'bg-slate-100 text-slate-600'"
+                                : 'bg-slate-100 text-slate-600'
+                            "
+
                             class="px-1.5 py-0.5 text-[10px] rounded font-mono">
 
                             {{ parseInt(form.kararYili || 2013) - yOff }}
@@ -395,6 +494,7 @@
                         pattern="[0-9]*"
                         v-model="form.dosyaYil"
                         required
+
                         class="w-16 p-2 bg-slate-50 text-center font-bold text-sm border-r border-slate-200 outline-none">
 
 
@@ -405,6 +505,7 @@
                         v-model="form.dosyaNo"
                         placeholder="No (Örn: 25411)"
                         required
+
                         class="flex-1 p-2 text-sm font-mono outline-none">
 
                 </div>
@@ -412,10 +513,14 @@
             </div>
 
 
-            <!-- KAYDET -->
+
+            <!-- =================================================
+                 KAYDET
+                 ================================================= -->
 
             <button
                 type="submit"
+
                 class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-blue-500/20 text-sm transition">
 
                 KAYDET VE LİSTEYE EKLE
@@ -423,23 +528,25 @@
             </button>
 
 
-            <!-- EMANET TÜRÜ -->
+
+            <!-- =================================================
+                 EMANET TÜRÜ
+                 ================================================= -->
 
             <div class="border-t border-slate-100 pt-2.5">
 
                 <button
                     type="button"
                     @click="showType = !showType"
+
                     class="w-full flex justify-between items-center text-xs text-slate-600 font-semibold">
 
                     <span>
-
                         Emanet Türü:
 
                         <strong class="text-blue-600">
                             {{ form.materyalTuru }}
                         </strong>
-
                     </span>
 
 
@@ -457,12 +564,29 @@
 
                     <button
                         type="button"
-                        v-for="t in ['Zarf','Poşet','Swap','Bilinmiyor','Emanet Yok','Kutu','Dijital']"
+                        v-for="t in [
+                            'Zarf',
+                            'Poşet',
+                            'Swap',
+                            'Bilinmiyor',
+                            'Emanet Yok',
+                            'Kutu',
+                            'Dijital'
+                        ]"
+
                         :key="'tag-'+t"
-                        @click="form.materyalTuru=t; showType=false"
-                        :class="form.materyalTuru === t
+
+                        @click="
+                            form.materyalTuru=t;
+                            showType=false
+                        "
+
+                        :class="
+                            form.materyalTuru === t
                             ? 'bg-blue-600 text-white font-bold'
-                            : 'bg-slate-100 text-slate-700 border'"
+                            : 'bg-slate-100 text-slate-700 border'
+                        "
+
                         class="px-2.5 py-1 rounded-lg text-xs transition">
 
                         {{ t }}
@@ -476,14 +600,19 @@
         </form>
 
 
+
         <!-- =====================================================
              LİSTE
              ===================================================== -->
 
         <div class="space-y-1.5">
 
+
+            <!-- Boş liste -->
+
             <div
                 v-if="items.length === 0"
+
                 class="bg-white p-6 rounded-xl text-center border border-slate-200 text-slate-400 text-xs">
 
                 Henüz kayıt eklenmedi.
@@ -491,14 +620,20 @@
             </div>
 
 
+
+            <!-- Kayıtlar -->
+
             <div
                 v-for="item in items"
                 :key="item.id"
+
                 class="bg-white p-2.5 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm">
+
 
                 <div>
 
-                    <div class="flex items-center gap-1 mb-0.5">
+                    <div
+                        class="flex items-center gap-1 mb-0.5">
 
                         <span
                             class="bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.5 rounded text-[10px] font-mono">
@@ -518,7 +653,8 @@
                     </div>
 
 
-                    <p class="text-[11px] text-slate-500 font-mono">
+                    <p
+                        class="text-[11px] text-slate-500 font-mono">
 
                         {{ item.dosyaYil }}/{{ item.dosyaNo }}
                         ({{ item.materyalTuru }})
@@ -531,6 +667,7 @@
                 <button
                     type="button"
                     @click="deleteItem(item.id)"
+
                     class="text-slate-300 hover:text-rose-500 p-2 text-xs">
 
                     <i class="fa-solid fa-trash-can"></i>
@@ -544,89 +681,68 @@
     </main>
 
 
-    <!-- =====================================================
-         YAZDIRMA ŞABLONU
-         ===================================================== -->
 
-    <div class="print-only p-4">
+    <!-- =========================================================
+         YAZDIRMA ŞABLONU
+         ========================================================= -->
+
+    <div class="print-only print-page">
 
 
         <!-- BAŞLIK -->
 
-        <h2
-            style="
-                text-align:center;
-                font-weight:bold;
-                font-size:14px;
-                margin:0 0 10px 0;
-            ">
+        <h2 class="print-title">
 
             EMANET ENVANTER & İMHA KONTROL LİSTESİ
 
         </h2>
 
 
-        <!-- =================================================
-             TABLO
-             ================================================= -->
 
-        <table>
+        <!-- =====================================================
+             SABİT GENİŞLİKLİ TABLO
+             ===================================================== -->
+
+        <table class="print-table">
+
+            <colgroup>
+
+                <col style="width:10%;">
+                <col style="width:17%;">
+                <col style="width:22%;">
+                <col style="width:12%;">
+                <col style="width:16%;">
+                <col style="width:23%;">
+
+            </colgroup>
+
 
             <thead>
 
                 <tr>
 
-                    <!-- SIRA NO -->
-
-                    <th style="width:10%;">
-
+                    <th>
                         Sıra No.
-
                     </th>
 
-
-                    <!-- EMANET NO -->
-
-                    <th style="width:17%;">
-
+                    <th>
                         Emanet No
-
                     </th>
 
-
-                    <!-- SORUŞTURMA / ESAS -->
-
-                    <th style="width:23%;">
-
+                    <th>
                         Soruşturma / Esas
-
                     </th>
 
-
-                    <!-- KARAR YILI -->
-
-                    <th style="width:11%;">
-
+                    <th>
                         Karar Yılı
-
                     </th>
 
-
-                    <!-- EMANET TÜRÜ -->
-
-                    <th style="width:14%;">
-
+                    <th>
                         Emanet Türü
-
                     </th>
 
-
-                    <!-- SONUÇ -->
-
-                    <th style="width:25%;">
-
+                    <th>
                         Sonuç
-
                     </th>
 
                 </tr>
@@ -641,24 +757,18 @@
                     :key="'p-'+item.id">
 
 
-                    <!-- SIRA NO -->
+                    <!-- SIRA -->
 
-                    <td style="text-align:center;">
+                    <td class="mono">
 
                         {{ idx + 1 }}
 
                     </td>
 
 
-                    <!-- EMANET NO -->
+                    <!-- EMANET -->
 
-                    <td
-                        style="
-                            text-align:center;
-                            font-family:monospace;
-                            font-weight:bold;
-                            white-space:nowrap;
-                        ">
+                    <td class="mono">
 
                         {{ item.emanetYil }}/{{ item.emanetNo }}
 
@@ -667,12 +777,7 @@
 
                     <!-- SORUŞTURMA -->
 
-                    <td
-                        style="
-                            text-align:center;
-                            font-family:monospace;
-                            white-space:nowrap;
-                        ">
+                    <td class="mono">
 
                         {{ item.dosyaYil }}/{{ item.dosyaNo }}
 
@@ -681,12 +786,7 @@
 
                     <!-- KARAR YILI -->
 
-                    <td
-                        style="
-                            text-align:center;
-                            font-family:monospace;
-                            white-space:nowrap;
-                        ">
+                    <td class="mono">
 
                         {{ item.kararYili }}
 
@@ -695,11 +795,7 @@
 
                     <!-- EMANET TÜRÜ -->
 
-                    <td
-                        style="
-                            text-align:center;
-                            white-space:nowrap;
-                        ">
+                    <td>
 
                         {{ item.materyalTuru }}
 
@@ -710,7 +806,13 @@
 
                     <td class="result-cell">
 
-                        ☐ İmha&nbsp;&nbsp;&nbsp;☐ İmha Değil
+                        <span class="result-option">
+                            ☐ İmha
+                        </span>
+
+                        <span class="result-option">
+                            ☐ İmha Değil
+                        </span>
 
                     </td>
 
@@ -721,30 +823,35 @@
         </table>
 
 
-        <!-- =================================================
+
+        <!-- =====================================================
              ALT BİLGİ
-             ================================================= -->
+             ===================================================== -->
 
         <div class="print-footer">
 
-            <div class="print-footer-left">
+
+            <div class="print-total">
 
                 Toplam Kayıt: {{ items.length }}
 
             </div>
 
 
-            <div class="print-footer-right">
+            <div class="print-date">
 
-                Kontrol Tarihi: {{ printDate }}
+                Kontrol Tarihi:
+                {{ currentDate }}
 
             </div>
+
 
         </div>
 
     </div>
 
 </div>
+
 
 
 <!-- =============================================================
@@ -766,6 +873,10 @@
         setup() {
 
 
+            /* =====================================================
+               YILLAR
+               ===================================================== */
+
             const targetYears = [
                 '2005',
                 '2006',
@@ -782,29 +893,40 @@
             ];
 
 
+            /* =====================================================
+               VERİ
+               ===================================================== */
+
             const items = ref([]);
 
-            const showYear = ref(false);
 
+            /* =====================================================
+               AKORDİYONLAR
+               ===================================================== */
+
+            const showYear = ref(false);
             const showType = ref(false);
+
+
+            /* =====================================================
+               INPUT REFERANSI
+               ===================================================== */
 
             const emanetInput = ref(null);
 
 
-            const printDate =
-                new Date().toLocaleDateString('tr-TR');
-
+            /* =====================================================
+               FORM
+               ===================================================== */
 
             const form = ref({
 
                 kararYili: '2013',
 
                 emanetYil: '2013',
-
                 emanetNo: '',
 
                 dosyaYil: '2013',
-
                 dosyaNo: '',
 
                 materyalTuru: 'Zarf'
@@ -812,7 +934,23 @@
             });
 
 
-            /* KARAR YILI */
+            /* =====================================================
+               TARİH
+               ===================================================== */
+
+            const currentDate = new Date().toLocaleDateString(
+                'tr-TR',
+                {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }
+            );
+
+
+            /* =====================================================
+               KARAR YILI DEĞİŞTİR
+               ===================================================== */
 
             const setKararYili = (yr) => {
 
@@ -827,25 +965,25 @@
             };
 
 
-            /* LOCAL STORAGE */
+            /* =====================================================
+               LOCAL STORAGE'DAN YÜKLE
+               ===================================================== */
 
             onMounted(() => {
 
                 const db =
                     localStorage.getItem('emanet_lite_db');
 
-
                 if (db) {
 
                     try {
 
-                        items.value =
-                            JSON.parse(db);
+                        items.value = JSON.parse(db);
 
                     } catch (error) {
 
                         console.error(
-                            'Kayıtlar okunamadı:',
+                            'Kayıt verisi okunamadı:',
                             error
                         );
 
@@ -858,7 +996,9 @@
             });
 
 
-            /* OTOMATİK KAYDET */
+            /* =====================================================
+               LOCAL STORAGE'A KAYDET
+               ===================================================== */
 
             watch(
 
@@ -880,54 +1020,93 @@
             );
 
 
-            /* KAYIT EKLE */
+            /* =====================================================
+               KAYIT EKLE
+               ===================================================== */
 
             const addItem = () => {
 
-                items.value.unshift({
 
-                    id: Date.now().toString(),
+                const newItem = {
 
-                    ...form.value
+                    id:
+                        Date.now().toString() +
+                        Math.random()
+                            .toString(36)
+                            .substring(2, 8),
 
-                });
+                    kararYili:
+                        form.value.kararYili,
 
+                    emanetYil:
+                        form.value.emanetYil,
+
+                    emanetNo:
+                        form.value.emanetNo,
+
+                    dosyaYil:
+                        form.value.dosyaYil,
+
+                    dosyaNo:
+                        form.value.dosyaNo,
+
+                    materyalTuru:
+                        form.value.materyalTuru
+
+                };
+
+
+                items.value.unshift(newItem);
+
+
+                /* Alanları temizle */
 
                 form.value.emanetNo = '';
 
                 form.value.dosyaNo = '';
 
 
-                if (emanetInput.value) {
+                /* Tekrar emanet numarasına odaklan */
 
-                    emanetInput.value.focus();
+                setTimeout(() => {
 
-                }
+                    if (emanetInput.value) {
+
+                        emanetInput.value.focus();
+
+                    }
+
+                }, 50);
 
             };
 
 
-            /* KAYIT SİL */
+            /* =====================================================
+               KAYIT SİL
+               ===================================================== */
 
             const deleteItem = (id) => {
 
                 items.value =
                     items.value.filter(
-                        i => i.id !== id
+                        item => item.id !== id
                     );
 
             };
 
 
-            /* EXCEL */
+            /* =====================================================
+               EXCEL
+               ===================================================== */
 
             const exportExcel = () => {
 
+
                 if (items.value.length === 0) {
 
-                    return alert(
-                        'Kayıt yok!'
-                    );
+                    alert('Kayıt yok!');
+
+                    return;
 
                 }
 
@@ -945,7 +1124,7 @@
                             'Emanet No':
                                 `${item.emanetYil}/${item.emanetNo}`,
 
-                            'Soruşturma No':
+                            'Soruşturma / Esas':
                                 `${item.dosyaYil}/${item.dosyaNo}`,
 
                             'Emanet Türü':
@@ -974,22 +1153,29 @@
 
                     wb,
 
-                    `Emanet_Envanteri_${form.value.kararYili}_${new Date().toISOString().slice(0,10)}.xlsx`
+                    `Emanet_Envanteri_${form.value.kararYili}_${new Date()
+                        .toISOString()
+                        .slice(0, 10)}.xlsx`
 
                 );
 
             };
 
 
-            /* YAZDIR */
+            /* =====================================================
+               YAZDIR
+               ===================================================== */
 
             const triggerPrint = () => {
 
+
                 if (items.value.length === 0) {
 
-                    return alert(
+                    alert(
                         'Yazdırılacak kayıt yok!'
                     );
+
+                    return;
 
                 }
 
@@ -998,6 +1184,10 @@
 
             };
 
+
+            /* =====================================================
+               DIŞARI AKTAR
+               ===================================================== */
 
             return {
 
@@ -1013,7 +1203,7 @@
 
                 emanetInput,
 
-                printDate,
+                currentDate,
 
                 setKararYili,
 
