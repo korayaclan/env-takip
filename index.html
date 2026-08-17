@@ -472,11 +472,8 @@
 
     <div class="print-only p-4">
 
-        <h2
-            style="text-align:center; font-weight:bold; font-size:14px; margin-bottom:10px;">
-
+        <h2 style="text-align:center; font-weight:bold; font-size:14px; margin-bottom:10px;">
             EMANET ENVANTER & İMHA KONTROL LİSTESİ
-
         </h2>
 
 
@@ -555,6 +552,32 @@
 
         </table>
 
+
+        <!-- =====================================================
+             YAZDIRMA ALT BİLGİSİ
+             ===================================================== -->
+
+        <div
+            style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-top:10px;
+                padding-top:6px;
+                border-top:1px solid #333;
+                font-size:11px;
+            ">
+
+            <div style="font-weight:bold;">
+                Toplam Kayıt: {{ items.length }}
+            </div>
+
+            <div>
+                Kontrol Tarihi: {{ printDate }}
+            </div>
+
+        </div>
+
     </div>
 
 </div>
@@ -618,6 +641,14 @@
                ===================================================== */
 
             const emanetInput = ref(null);
+
+
+            /* =====================================================
+               YAZDIRMA TARİHİ
+               ===================================================== */
+
+            const printDate =
+                new Date().toLocaleDateString('tr-TR');
 
 
             /* =====================================================
@@ -860,6 +891,8 @@
                 form,
 
                 emanetInput,
+
+                printDate,
 
                 setKararYili,
 
