@@ -128,7 +128,7 @@
             .print-table col:nth-child(3) { width: 22%; }
             .print-table col:nth-child(4) { width: 12%; }
             .print-table col:nth-child(5) { width: 18%; }
-            .print-table col:nth-child(6) { width: 22%; } /* Sonuç kolonu dengelendi */
+            .print-table col:nth-child(6) { width: 22%; }
 
             .print-table th,
             .print-table td {
@@ -405,7 +405,7 @@
                 <div v-show="showType" class="flex flex-wrap gap-1 mt-2">
                     <button
                         type="button"
-                        v-for="t in ['Zarf', 'Poşet', 'Swap', 'Bilinmiyor', 'Emanet Yok', 'Soruşturma Yok', 'Kutu', 'Dijital']"
+                        v-for="t in ['Seçim Yok', 'Zarf', 'Poşet', 'Swap', 'Bilinmiyor', 'Emanet Yok', 'Soruşturma Yok', 'Kutu', 'Dijital']"
                         :key="'tag-'+t"
                         @click="form.materyalTuru=t; showType=false"
                         :class="form.materyalTuru === t ? 'bg-blue-600 text-white font-bold' : 'bg-slate-100 text-slate-700 border'"
@@ -444,7 +444,7 @@
                     </span>
                 </div>
                 <p class="text-[11px] text-slate-500 font-mono">
-                    {{ getDosyaDisplay(item) }} ({{ item.materyalTuru }})
+                    {{ getDosyaDisplay(item) }} <span v-if="item.materyalTuru !== 'Seçim Yok'">({{ item.materyalTuru }})</span>
                 </p>
             </div>
 
@@ -491,7 +491,7 @@
                     <td class="mono">{{ getEmanetPdfText(item) }}</td>
                     <td class="mono">{{ getDosyaPdfText(item) }}</td>
                     <td class="mono">{{ item.kararYili }}</td>
-                    <td>{{ item.materyalTuru }}</td>
+                    <td>{{ getTurPdfText(item) }}</td>
                     <td class="result-cell">
                         <span class="result-option">☐ İmha</span>
                         <span class="result-option">☐ İmha Değil</span>
@@ -544,7 +544,7 @@
                 emanetNo: '',
                 dosyaYil: '2013',
                 dosyaNo: '',
-                materyalTuru: 'Zarf'
+                materyalTuru: 'Seçim Yok'
             });
 
             const isFormEmanetYok = computed(() => {
@@ -562,7 +562,7 @@
             const toggleEmanetYok = () => {
                 if (isFormEmanetYok.value) {
                     form.value.emanetNo = '';
-                    if (form.value.materyalTuru === 'Emanet Yok') form.value.materyalTuru = 'Zarf';
+                    if (form.value.materyalTuru === 'Emanet Yok') form.value.materyalTuru = 'Seçim Yok';
                 } else {
                     form.value.emanetNo = 'Yok';
                 }
@@ -572,7 +572,7 @@
             const toggleDosyaYok = () => {
                 if (isFormDosyaYok.value) {
                     form.value.dosyaNo = '';
-                    if (form.value.materyalTuru === 'Soruşturma Yok') form.value.materyalTuru = 'Zarf';
+                    if (form.value.materyalTuru === 'Soruşturma Yok') form.value.materyalTuru = 'Seçim Yok';
                 } else {
                     form.value.dosyaNo = 'Yok';
                 }
@@ -593,6 +593,7 @@
                 return no === 'yok' || tur === 'soruşturma yok' || tur === 'sorusturma yok';
             };
 
+            /* PDF Hücresi Boş Bırakma */
             const getEmanetPdfText = (item) => {
                 if (isItemEmanetYok(item)) return '';
                 return `${item.emanetYil}/${item.emanetNo}`;
@@ -603,6 +604,12 @@
                 return `${item.dosyaYil}/${item.dosyaNo}`;
             };
 
+            const getTurPdfText = (item) => {
+                if (!item || item.materyalTuru === 'Seçim Yok') return '';
+                return item.materyalTuru;
+            };
+
+            /* Uygulama Ekranı Görünümü */
             const getEmanetDisplay = (item) => {
                 if (isItemEmanetYok(item)) return 'Emanet Yok';
                 return `${item.emanetYil}/${item.emanetNo}`;
@@ -695,7 +702,7 @@
                     'Karar Yılı': item.kararYili,
                     'Emanet No': getEmanetPdfText(item) || 'Yok',
                     'Soruşturma / Esas': getDosyaPdfText(item) || 'Yok',
-                    'Emanet Türü': item.materyalTuru
+                    'Emanet Türü': getTurPdfText(item) || ''
                 }));
 
                 const ws = XLSX.utils.json_to_sheet(data);
@@ -735,6 +742,7 @@
                 toggleDosyaYok,
                 getEmanetPdfText,
                 getDosyaPdfText,
+                getTurPdfText,
                 getEmanetDisplay,
                 getDosyaDisplay
             };
