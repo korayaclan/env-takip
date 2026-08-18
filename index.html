@@ -63,7 +63,7 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 12mm;
+                margin: 10mm;
             }
 
             html,
@@ -98,7 +98,7 @@
                 width: 100%;
                 max-width: 100%;
                 margin: 0 auto;
-                padding: 8mm 0 0 0;
+                padding: 5mm 0 0 0;
             }
 
             .print-title {
@@ -106,35 +106,44 @@
                 font-weight: 700;
                 font-size: 14px;
                 line-height: 1.2;
-                margin: 0 0 7mm 0;
+                margin: 0 0 6mm 0;
                 white-space: nowrap;
             }
 
+            /* Sağ çizgi taşmasını önleyen garantili tablo düzeni */
             .print-table {
-                width: 100%;
-                max-width: 100%;
+                width: 98%;
                 border-collapse: collapse;
                 border-spacing: 0;
                 table-layout: fixed;
                 margin: 0 auto;
+                border-right: 1.5px solid #000 !important;
+                border-left: 1.5px solid #000 !important;
+                border-top: 1.5px solid #000 !important;
+                border-bottom: 1.5px solid #000 !important;
             }
 
-            .print-table col:nth-child(1) { width: 10%; }
+            .print-table col:nth-child(1) { width: 9%; }
             .print-table col:nth-child(2) { width: 17%; }
             .print-table col:nth-child(3) { width: 22%; }
             .print-table col:nth-child(4) { width: 12%; }
-            .print-table col:nth-child(5) { width: 16%; }
-            .print-table col:nth-child(6) { width: 23%; }
+            .print-table col:nth-child(5) { width: 18%; }
+            .print-table col:nth-child(6) { width: 22%; } /* Sonuç kolonu dengelendi */
 
             .print-table th,
             .print-table td {
                 border: 1px solid #333;
-                padding: 5px 4px;
-                font-size: 10.5px;
-                line-height: 1.25;
+                padding: 5px 3px;
+                font-size: 10px;
+                line-height: 1.2;
                 text-align: center;
                 vertical-align: middle;
                 box-sizing: border-box;
+            }
+
+            .print-table th:last-child,
+            .print-table td:last-child {
+                border-right: 1.5px solid #000 !important;
             }
 
             .print-table th {
@@ -154,9 +163,9 @@
 
             .result-cell {
                 white-space: nowrap !important;
-                font-size: 10px !important;
-                padding-left: 3px !important;
-                padding-right: 3px !important;
+                font-size: 9.5px !important;
+                padding-left: 2px !important;
+                padding-right: 2px !important;
             }
 
             .result-option {
@@ -165,7 +174,7 @@
             }
 
             .result-option + .result-option {
-                margin-left: 7px;
+                margin-left: 5px;
             }
 
             .print-table tr {
@@ -178,13 +187,13 @@
             }
 
             .print-footer {
-                width: 100%;
+                width: 98%;
+                margin: 5mm auto 0 auto;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-top: 5mm;
                 padding: 0;
-                font-size: 10.5px;
+                font-size: 10px;
                 font-weight: 600;
             }
 
@@ -373,10 +382,10 @@
 
             <!-- KAYDET -->
             <button
-    type="submit"
-    class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-emerald-600/20 text-sm transition">
-    KAYDET VE LİSTEYE EKLE
-</button>
+                type="submit"
+                class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-emerald-600/20 text-sm transition">
+                KAYDET VE LİSTEYE EKLE
+            </button>
 
             <!-- EMANET TÜRÜ -->
             <div class="border-t border-slate-100 pt-2">
@@ -459,12 +468,12 @@
 
         <table class="print-table">
             <colgroup>
-                <col style="width:10%;">
+                <col style="width:9%;">
                 <col style="width:17%;">
                 <col style="width:22%;">
                 <col style="width:12%;">
-                <col style="width:16%;">
-                <col style="width:23%;">
+                <col style="width:18%;">
+                <col style="width:22%;">
             </colgroup>
             <thead>
                 <tr>
