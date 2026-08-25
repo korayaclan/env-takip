@@ -58,6 +58,21 @@
             border-radius: 4px;
         }
 
+        /* Toast & Backdrop Animasyonu */
+        .toast-enter-active, .toast-leave-active {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast-enter-from, .toast-leave-to {
+            opacity: 0;
+            transform: scale(0.92);
+        }
+        .backdrop-enter-active, .backdrop-leave-active {
+            transition: opacity 0.25s ease;
+        }
+        .backdrop-enter-from, .backdrop-leave-to {
+            opacity: 0;
+        }
+
         /* =========================================================
            YAZDIRMA / PDF
            ========================================================= */
@@ -232,7 +247,31 @@
 <div
     id="app"
     :class="isDark ? 'bg-[#0b1120] text-slate-100' : 'bg-slate-100 text-slate-800'"
-    class="max-w-md mx-auto h-[100dvh] flex flex-col overflow-hidden transition-colors duration-200">
+    class="max-w-md mx-auto h-[100dvh] flex flex-col overflow-hidden transition-colors duration-200 relative">
+
+    <!-- =========================================================
+         BLUR ARKA PLAN VE MERKEZİ TOAST BİLDİRİMİ
+         ========================================================= -->
+    <transition name="backdrop">
+        <div 
+            v-if="toast.show" 
+            class="fixed inset-0 z-[90] bg-black/35 backdrop-blur-[3px] pointer-events-none no-print">
+        </div>
+    </transition>
+
+    <transition name="toast">
+        <div 
+            v-if="toast.show" 
+            class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] max-w-[85%] px-5 py-4 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-3 border backdrop-blur-md pointer-events-none text-center justify-center no-print"
+            :class="toast.type === 'success' ? 'bg-emerald-600/95 text-white border-emerald-400/50 shadow-emerald-950/60' : 
+                    toast.type === 'error' ? 'bg-rose-600/95 text-white border-rose-400/50 shadow-rose-950/60' : 
+                    'bg-slate-900/95 text-white border-slate-700 shadow-black/70'">
+            <i :class="toast.type === 'success' ? 'fa-solid fa-circle-check text-lg text-emerald-200 shrink-0' : 
+                       toast.type === 'error' ? 'fa-solid fa-triangle-exclamation text-lg text-rose-200 shrink-0' : 
+                       'fa-solid fa-circle-info text-lg text-blue-300 shrink-0'"></i>
+            <span class="leading-snug">{{ toast.message }}</span>
+        </div>
+    </transition>
 
     <!-- =========================================================
          HEADER
@@ -341,10 +380,10 @@
                     <input type="file" accept=".json" @change="importJSON" class="hidden">
                 </label>
 
-                <!-- VERİLERİ SIFIRLA (YENİ ÖZELLİK) -->
+                <!-- VERİLERİ SIFIRLA -->
                 <button
                     type="button"
-                    @click="resetData"
+                    @click="promptReset"
                     class="w-full p-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 text-xs font-semibold flex items-center justify-between transition">
                     <span class="flex items-center gap-2">
                         <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
@@ -362,6 +401,56 @@
                 class="w-full py-2.5 rounded-xl text-xs font-bold transition mt-2 shadow-sm">
                 Kapat
             </button>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         ÖZEL ONAY MODALI (YEŞİL YEDEK AL BUTONLU SIFIRLAMA UYARISI)
+         ========================================================= -->
+    <div
+        v-if="showResetModal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print">
+        
+        <div
+            :class="isDark ? 'bg-[#1e293b] border-slate-700 text-slate-100' : 'bg-white border-slate-200 text-slate-800'"
+            class="w-full max-w-xs rounded-2xl p-4 shadow-2xl border space-y-3 transition-colors text-center">
+            
+            <div class="w-12 h-12 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto text-lg">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h3 class="font-bold text-sm">
+                VERİLERİ SIFIRLA
+            </h3>
+
+            <p class="text-xs opacity-80 leading-relaxed">
+                Mevcut tüm veriler kalıcı olarak silinecektir. Lütfen silmeden önce verilerinizin yedeğini aldığınızdan emin olun!
+            </p>
+
+            <!-- YEŞİL YEDEK AL BUTONU -->
+            <button
+                type="button"
+                @click="exportJSON"
+                class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20">
+                <i class="fa-solid fa-file-export"></i> Şimdi Yedek Al (JSON İndir)
+            </button>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button
+                    type="button"
+                    @click="showResetModal = false"
+                    :class="isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                    class="py-2.5 rounded-xl text-xs font-semibold transition">
+                    İptal
+                </button>
+
+                <button
+                    type="button"
+                    @click="executeReset"
+                    class="py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-rose-600/30">
+                    Evet, Sıfırla
+                </button>
+            </div>
         </div>
     </div>
 
@@ -845,6 +934,25 @@
             const items = ref([]);
             const isDark = ref(false);
             const showSettingsModal = ref(false);
+            const showResetModal = ref(false);
+
+            /* TOAST BİLDİRİM STATE */
+            const toast = ref({
+                show: false,
+                message: '',
+                type: 'info'
+            });
+
+            let toastTimeout = null;
+            const triggerToast = (msg, type = 'info') => {
+                toast.value.message = msg;
+                toast.value.type = type;
+                toast.value.show = true;
+                if (toastTimeout) clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    toast.value.show = false;
+                }, 2200);
+            };
 
             const reversedItems = computed(() => {
                 return [...items.value].reverse();
@@ -1031,7 +1139,7 @@
             /* JSON DIŞA AKTAR */
             const exportJSON = () => {
                 if (items.value.length === 0) {
-                    alert('Dışa aktarılacak kayıt bulunmuyor!');
+                    triggerToast('Dışa aktarılacak kayıt bulunmuyor.', 'info');
                     return;
                 }
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(items.value, null, 2));
@@ -1041,6 +1149,7 @@
                 document.body.appendChild(downloadAnchor);
                 downloadAnchor.click();
                 downloadAnchor.remove();
+                triggerToast('Yedek dosyası indirildi.', 'success');
             };
 
             /* JSON İÇE AKTAR */
@@ -1057,40 +1166,35 @@
                             const newEntries = parsed.filter(i => !existingIds.has(i.id));
                             
                             items.value = [...items.value, ...newEntries];
-                            alert(`${newEntries.length} yeni kayıt başarıyla yüklendi!`);
+                            triggerToast(`${newEntries.length} kayıt başarıyla yüklendi.`, 'success');
                             showSettingsModal.value = false;
                         } else {
-                            alert('Geçersiz dosya yapısı!');
+                            triggerToast('Geçersiz dosya yapısı.', 'error');
                         }
                     } catch (err) {
-                        alert('JSON dosyası okunamadı!');
+                        triggerToast('JSON dosyası okunamadı.', 'error');
                     }
                 };
                 reader.readAsText(file);
                 event.target.value = '';
             };
 
-            /* VERİLERİ SIFIRLA (YEDEK UYARILI) */
-            const resetData = () => {
+            /* SIFIRLAMA KONTROLÜ */
+            const promptReset = () => {
                 if (items.value.length === 0) {
-                    alert('Zaten sistemde kayıt bulunmuyor.');
+                    triggerToast('Zaten sistemde kayıt bulunmuyor.', 'info');
                     return;
                 }
+                showSettingsModal.value = false;
+                showResetModal.value = true;
+            };
 
-                // 1. Adım: Kullanıcıya yedek alıp almadığını soran net bir uyarı
-                const yedekAlindi = confirm("⚠️ DİKKAT!\n\nMevcut tüm veriler silinecektir.\n\nVerilerinizin yedeğini (JSON Dışa Aktar ile) aldığınızdan emin misiniz?");
-                
-                if (yedekAlindi) {
-                    // 2. Adım: Son bir kez daha kesin onay alalım
-                    const kesinKarar = confirm("⚠️ SON UYARI: Silinen veriler geri getirilemez!\n\nSıfırlamak istediğinize emin misiniz?");
-                    
-                    if (kesinKarar) {
-                        items.value = [];
-                        localStorage.removeItem('emanet_lite_db');
-                        showSettingsModal.value = false;
-                        alert('Tüm veriler başarıyla sıfırlandı.');
-                    }
-                }
+            /* GERÇEK SIFIRLAMA İŞLEMİ */
+            const executeReset = () => {
+                items.value = [];
+                localStorage.removeItem('emanet_lite_db');
+                showResetModal.value = false;
+                triggerToast('Tüm veriler başarıyla sıfırlandı.', 'success');
             };
 
             onMounted(() => {
@@ -1148,11 +1252,12 @@
 
             const deleteItem = (id) => {
                 items.value = items.value.filter(item => item.id !== id);
+                triggerToast('Kayıt silindi.', 'info');
             };
 
             const exportExcel = () => {
                 if (items.value.length === 0) {
-                    alert('Kayıt yok!');
+                    triggerToast('Kayıt bulunmuyor.', 'info');
                     return;
                 }
 
@@ -1169,11 +1274,12 @@
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Envanter");
                 XLSX.writeFile(wb, `Emanet_Envanteri_${form.value.kararYili}_${form.value.rafGrubu}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+                triggerToast('Excel tablosu indirildi.', 'success');
             };
 
             const triggerPrint = () => {
                 if (items.value.length === 0) {
-                    alert('Yazdırılacak kayıt yok!');
+                    triggerToast('Yazdırılacak kayıt bulunmuyor.', 'info');
                     return;
                 }
                 window.print();
@@ -1188,6 +1294,8 @@
                 showYear,
                 showType,
                 showSettingsModal,
+                showResetModal,
+                toast,
                 form,
                 emanetInput,
                 dosyaInput,
@@ -1201,7 +1309,8 @@
                 exportExcel,
                 exportJSON,
                 importJSON,
-                resetData,
+                promptReset,
+                executeReset,
                 triggerPrint,
                 isFormEmanetYok,
                 isFormDosyaYok,
