@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Emanet Envanter Sistemi V2</title>
 
+    <!-- PWA & Mobile Meta Tags -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Envanter">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -249,9 +257,7 @@
     :class="isDark ? 'bg-[#0b1120] text-slate-100' : 'bg-slate-100 text-slate-800'"
     class="max-w-md mx-auto h-[100dvh] flex flex-col overflow-hidden transition-colors duration-200 relative">
 
-    <!-- =========================================================
-         BLUR ARKA PLAN VE MERKEZİ TOAST BİLDİRİMİ
-         ========================================================= -->
+    <!-- MERKEZİ TOAST BİLDİRİMİ -->
     <transition name="backdrop">
         <div 
             v-if="toast.show" 
@@ -273,9 +279,7 @@
         </div>
     </transition>
 
-    <!-- =========================================================
-         HEADER
-         ========================================================= -->
+    <!-- HEADER -->
     <header
         class="bg-[#0f172a] text-white p-3.5 sticky top-0 z-50 shadow-md no-print flex justify-between items-center shrink-0 border-b border-slate-800">
 
@@ -319,9 +323,7 @@
         </div>
     </header>
 
-    <!-- =========================================================
-         AYARLAR POP-UP MODALI (SEÇENEKLER)
-         ========================================================= -->
+    <!-- AYARLAR POP-UP MODALI -->
     <div
         v-if="showSettingsModal"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm no-print">
@@ -340,7 +342,6 @@
             </div>
 
             <div class="space-y-2">
-                <!-- Gece/Gündüz Modu Butonu -->
                 <button
                     type="button"
                     @click="toggleDarkMode"
@@ -355,7 +356,6 @@
                     </span>
                 </button>
 
-                <!-- JSON Dışa Aktar -->
                 <button
                     type="button"
                     @click="exportJSON"
@@ -368,7 +368,6 @@
                     <i class="fa-solid fa-download text-slate-400 text-xs"></i>
                 </button>
 
-                <!-- JSON İçe Aktar -->
                 <label
                     :class="isDark ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'"
                     class="w-full p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-between cursor-pointer transition">
@@ -380,7 +379,6 @@
                     <input type="file" accept=".json" @change="importJSON" class="hidden">
                 </label>
 
-                <!-- VERİLERİ SIFIRLA -->
                 <button
                     type="button"
                     @click="promptReset"
@@ -393,7 +391,6 @@
                 </button>
             </div>
 
-            <!-- Kapat Butonu -->
             <button
                 type="button"
                 @click="showSettingsModal = false"
@@ -404,9 +401,7 @@
         </div>
     </div>
 
-    <!-- =========================================================
-         ÖZEL ONAY MODALI (YEŞİL YEDEK AL BUTONLU SIFIRLAMA UYARISI)
-         ========================================================= -->
+    <!-- ÖZEL SIFIRLAMA MODALI -->
     <div
         v-if="showResetModal"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print">
@@ -427,7 +422,6 @@
                 Mevcut tüm veriler kalıcı olarak silinecektir. Lütfen silmeden önce verilerinizin yedeğini aldığınızdan emin olun!
             </p>
 
-            <!-- YEŞİL YEDEK AL BUTONU -->
             <button
                 type="button"
                 @click="exportJSON"
@@ -454,19 +448,12 @@
         </div>
     </div>
 
-    <!-- =========================================================
-         FORM & AYARLAR
-         ========================================================= -->
+    <!-- FORM & AYARLAR -->
     <div class="p-3 pb-1 space-y-2.5 shrink-0 no-print">
-
-        <!-- KARAR / GRUP YILI + RAF BÖLÜMÜ -->
         <div
-            :class="isDark
-                ? 'bg-[#1e293b] border-slate-700 shadow-slate-950/50'
-                : 'bg-white border-slate-200'"
+            :class="isDark ? 'bg-[#1e293b] border-slate-700 shadow-slate-950/50' : 'bg-white border-slate-200'"
             class="rounded-xl shadow-sm border p-2.5 transition-colors">
 
-            <!-- ÜST BAŞLIK -->
             <button
                 type="button"
                 @click="showYear = !showYear"
@@ -474,29 +461,14 @@
                 :class="isDark ? 'text-indigo-300' : 'text-indigo-900'">
                 <span>
                     Karar / Grup:
-                    <strong
-                        class="font-mono text-sm ml-1"
-                        :class="isDark
-                            ? 'text-indigo-400'
-                            : 'text-indigo-600'">
+                    <strong class="font-mono text-sm ml-1" :class="isDark ? 'text-indigo-400' : 'text-indigo-600'">
                         {{ form.kararYili }}/{{ form.rafGrubu }}
                     </strong>
                 </span>
-                <i
-                    :class="showYear
-                        ? 'fa-chevron-up'
-                        : 'fa-chevron-down'"
-                    class="fa-solid text-slate-400 text-xs">
-                </i>
+                <i :class="showYear ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-slate-400 text-xs"></i>
             </button>
 
-            <!-- YIL SEÇİMİ -->
-            <div
-                v-show="showYear"
-                :class="isDark
-                    ? 'border-slate-700'
-                    : 'border-slate-100'"
-                class="grid grid-cols-6 gap-1 mt-2.5 pt-2 border-t">
+            <div v-show="showYear" :class="isDark ? 'border-slate-700' : 'border-slate-100'" class="grid grid-cols-6 gap-1 mt-2.5 pt-2 border-t">
                 <button
                     v-for="y in targetYears"
                     :key="'grp-'+y"
@@ -513,23 +485,11 @@
                 </button>
             </div>
 
-            <!-- RAF BÖLÜMÜ -->
-            <div
-                v-show="showYear"
-                :class="isDark
-                    ? 'border-slate-700'
-                    : 'border-slate-100'"
-                class="mt-2 pt-2 border-t">
-
+            <div v-show="showYear" :class="isDark ? 'border-slate-700' : 'border-slate-100'" class="mt-2 pt-2 border-t">
                 <div class="flex justify-between items-center mb-1.5">
-                    <span
-                        :class="isDark
-                            ? 'text-slate-400'
-                            : 'text-slate-500'"
-                        class="text-[10px] font-bold uppercase tracking-wider">
+                    <span :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="text-[10px] font-bold uppercase tracking-wider">
                         Raf / Grup Bölümü
                     </span>
-
                     <span class="text-[10px] font-mono font-bold text-blue-600">
                         {{ form.kararYili }}/{{ form.rafGrubu }}
                     </span>
@@ -554,25 +514,17 @@
             </div>
         </div>
 
-        <!-- HIZLI FORM -->
         <form
             @submit.prevent="addItem"
-            :class="isDark
-                ? 'bg-[#1e293b] border-slate-700 shadow-slate-950/50'
-                : 'bg-white border-slate-200'"
+            :class="isDark ? 'bg-[#1e293b] border-slate-700 shadow-slate-950/50' : 'bg-white border-slate-200'"
             class="p-3 rounded-xl shadow-sm border space-y-2.5 transition-colors">
 
             <!-- EMANET NO -->
             <div class="space-y-1">
                 <div class="flex justify-between items-center">
-                    <label
-                        :class="isDark
-                            ? 'text-slate-400'
-                            : 'text-slate-600'"
-                        class="text-[11px] font-bold uppercase tracking-wider">
+                    <label :class="isDark ? 'text-slate-400' : 'text-slate-600'" class="text-[11px] font-bold uppercase tracking-wider">
                         Emanet No
                     </label>
-
                     <div class="flex gap-1">
                         <button
                             type="button"
@@ -591,22 +543,14 @@
                     </div>
                 </div>
 
-                <div
-                    :class="isDark
-                        ? 'border-slate-700 bg-[#0f172a]'
-                        : 'border-slate-300 bg-white'"
-                    class="flex border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 items-center">
-
+                <div :class="isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white'" class="flex border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 items-center">
                     <input
                         type="text"
                         inputmode="numeric"
                         v-model="form.emanetYil"
                         required
-                        :class="isDark
-                            ? 'bg-[#0f172a] text-slate-200 border-slate-700'
-                            : 'bg-slate-50 text-slate-900 border-slate-200'"
+                        :class="isDark ? 'bg-[#0f172a] text-slate-200 border-slate-700' : 'bg-slate-50 text-slate-900 border-slate-200'"
                         class="w-16 p-2 text-center font-bold text-sm border-r outline-none">
-
                     <input
                         type="text"
                         inputmode="numeric"
@@ -614,20 +558,13 @@
                         placeholder="Numara Yazınız"
                         required
                         ref="emanetInput"
-                        :class="isDark
-                            ? 'bg-[#0f172a] text-slate-100 placeholder-slate-500'
-                            : 'bg-white text-slate-900 placeholder-slate-400'"
+                        :class="isDark ? 'bg-[#0f172a] text-slate-100 placeholder-slate-500' : 'bg-white text-slate-900 placeholder-slate-400'"
                         class="flex-1 p-2 text-sm font-mono outline-none min-w-0">
-
                     <button
                         type="button"
                         @mousedown.prevent
                         @click="toggleEmanetYok"
-                        :class="isFormEmanetYok
-                            ? 'bg-amber-500 text-white'
-                            : isDark
-                                ? 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200'"
+                        :class="isFormEmanetYok ? 'bg-amber-500 text-white' : isDark ? 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200'"
                         class="px-2.5 py-2 text-[11px] font-bold border-l transition shrink-0">
                         Yok
                     </button>
@@ -637,14 +574,9 @@
             <!-- SORUŞTURMA / ESAS NO -->
             <div class="space-y-1">
                 <div class="flex justify-between items-center">
-                    <label
-                        :class="isDark
-                            ? 'text-slate-400'
-                            : 'text-slate-600'"
-                        class="text-[11px] font-bold uppercase tracking-wider">
+                    <label :class="isDark ? 'text-slate-400' : 'text-slate-600'" class="text-[11px] font-bold uppercase tracking-wider">
                         Soruşturma / Esas No
                     </label>
-
                     <div class="flex gap-1">
                         <button
                             type="button"
@@ -663,22 +595,14 @@
                     </div>
                 </div>
 
-                <div
-                    :class="isDark
-                        ? 'border-slate-700 bg-[#0f172a]'
-                        : 'border-slate-300 bg-white'"
-                    class="flex border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 items-center">
-
+                <div :class="isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white'" class="flex border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 items-center">
                     <input
                         type="text"
                         inputmode="numeric"
                         v-model="form.dosyaYil"
                         required
-                        :class="isDark
-                            ? 'bg-[#0f172a] text-slate-200 border-slate-700'
-                            : 'bg-slate-50 text-slate-900 border-slate-200'"
+                        :class="isDark ? 'bg-[#0f172a] text-slate-200 border-slate-700' : 'bg-slate-50 text-slate-900 border-slate-200'"
                         class="w-16 p-2 text-center font-bold text-sm border-r outline-none">
-
                     <input
                         type="text"
                         inputmode="numeric"
@@ -686,27 +610,19 @@
                         placeholder="Numara Yazınız"
                         required
                         ref="dosyaInput"
-                        :class="isDark
-                            ? 'bg-[#0f172a] text-slate-100 placeholder-slate-500'
-                            : 'bg-white text-slate-900 placeholder-slate-400'"
+                        :class="isDark ? 'bg-[#0f172a] text-slate-100 placeholder-slate-500' : 'bg-white text-slate-900 placeholder-slate-400'"
                         class="flex-1 p-2 text-sm font-mono outline-none min-w-0">
-
                     <button
                         type="button"
                         @mousedown.prevent
                         @click="toggleDosyaYok"
-                        :class="isFormDosyaYok
-                            ? 'bg-amber-500 text-white'
-                            : isDark
-                                ? 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200'"
+                        :class="isFormDosyaYok ? 'bg-amber-500 text-white' : isDark ? 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200'"
                         class="px-2.5 py-2 text-[11px] font-bold border-l transition shrink-0">
                         Yok
                     </button>
                 </div>
             </div>
 
-            <!-- KAYDET -->
             <button
                 type="submit"
                 class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-emerald-600/20 text-sm transition">
@@ -714,62 +630,28 @@
             </button>
 
             <!-- EMANET TÜRÜ -->
-            <div
-                :class="isDark
-                    ? 'border-slate-700'
-                    : 'border-slate-100'"
-                class="border-t pt-2">
-
+            <div :class="isDark ? 'border-slate-700' : 'border-slate-100'" class="border-t pt-2">
                 <button
                     type="button"
                     @click="showType = !showType"
-                    :class="isDark
-                        ? 'text-slate-300'
-                        : 'text-slate-600'"
+                    :class="isDark ? 'text-slate-300' : 'text-slate-600'"
                     class="w-full flex justify-between items-center text-xs font-semibold">
                     <span>
                         Emanet Türü:
-                        <strong class="text-blue-500 ml-1">
-                            {{ form.materyalTuru }}
-                        </strong>
+                        <strong class="text-blue-500 ml-1">{{ form.materyalTuru }}</strong>
                     </span>
-
-                    <i
-                        :class="showType
-                            ? 'fa-chevron-up'
-                            : 'fa-chevron-down'"
-                        class="fa-solid text-slate-400 text-xs">
-                    </i>
+                    <i :class="showType ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-slate-400 text-xs"></i>
                 </button>
 
-                <div
-                    v-show="showType"
-                    class="flex flex-wrap gap-1 mt-2">
+                <div v-show="showType" class="flex flex-wrap gap-1 mt-2">
                     <button
                         type="button"
-                        v-for="t in [
-                            'Seçim Yok',
-                            'Zarf',
-                            'Poşet',
-                            'Kutu',
-                            'Çek/Senet',
-                            'Abonelik Aslı',
-                            'Eşya',
-                            'Elektronik Eşya',
-                            'Dijital Materyal',
-                            'Swap',
-                            'Bilinmiyor'
-                        ]"
+                        v-for="t in ['Seçim Yok', 'Zarf', 'Poşet', 'Kutu', 'Çek/Senet', 'Abonelik Aslı', 'Eşya', 'Elektronik Eşya', 'Dijital Materyal', 'Swap', 'Bilinmiyor']"
                         :key="'tag-'+t"
-                        @click="
-                            form.materyalTuru=t;
-                            showType=false
-                        "
+                        @click="form.materyalTuru=t; showType=false"
                         :class="form.materyalTuru === t
                             ? 'bg-blue-600 text-white font-bold shadow-sm'
-                            : isDark
-                                ? 'bg-[#0f172a] text-slate-300 border-slate-700 hover:bg-slate-800 border'
-                                : 'bg-slate-100 text-slate-700 border border-slate-200'"
+                            : isDark ? 'bg-[#0f172a] text-slate-300 border-slate-700 hover:bg-slate-800 border' : 'bg-slate-100 text-slate-700 border border-slate-200'"
                         class="px-2 py-0.5 rounded-lg text-xs transition">
                         {{ t }}
                     </button>
@@ -778,91 +660,54 @@
         </form>
     </div>
 
-    <!-- =========================================================
-         LİSTE
-         ========================================================= -->
-    <main
-        class="flex-1 overflow-y-auto px-3 py-2 space-y-1.5 custom-scroll no-print">
-
-        <!-- Boş liste -->
+    <!-- LİSTE -->
+    <main class="flex-1 overflow-y-auto px-3 py-2 space-y-1.5 custom-scroll no-print">
         <div
             v-if="reversedItems.length === 0"
-            :class="isDark
-                ? 'bg-[#1e293b] border-slate-800 text-slate-500'
-                : 'bg-white border-slate-200 text-slate-400'"
+            :class="isDark ? 'bg-[#1e293b] border-slate-800 text-slate-500' : 'bg-white border-slate-200 text-slate-400'"
             class="p-6 rounded-xl text-center border text-xs transition-colors">
             Henüz kayıt eklenmedi.
         </div>
 
-        <!-- Kayıtlar -->
         <div
             v-for="item in reversedItems"
             :key="item.id"
-            :class="isDark
-                ? 'bg-[#1e293b] border-slate-700/80 shadow-slate-950/30'
-                : 'bg-white border-slate-200'"
+            :class="isDark ? 'bg-[#1e293b] border-slate-700/80 shadow-slate-950/30' : 'bg-white border-slate-200'"
             class="p-2.5 rounded-xl border flex justify-between items-center shadow-sm transition-colors">
 
             <div>
                 <div class="flex items-center gap-1 mb-0.5">
                     <span
-                        :class="isDark
-                            ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800/60'
-                            : 'bg-indigo-50 text-indigo-700'"
+                        :class="isDark ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800/60' : 'bg-indigo-50 text-indigo-700'"
                         class="font-bold px-1.5 py-0.5 rounded text-[10px] font-mono">
                         Grup: {{ item.kararYili }}/{{ getRafGrubu(item) }}
                     </span>
-
-                    <span
-                        :class="isDark
-                            ? 'text-slate-100'
-                            : 'text-slate-900'"
-                        class="font-bold text-xs font-mono">
+                    <span :class="isDark ? 'text-slate-100' : 'text-slate-900'" class="font-bold text-xs font-mono">
                         {{ getEmanetDisplay(item) }}
                     </span>
                 </div>
-
-                <p
-                    :class="isDark
-                        ? 'text-slate-400'
-                        : 'text-slate-500'"
-                    class="text-[11px] font-mono">
+                <p :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="text-[11px] font-mono">
                     {{ getDosyaDisplay(item) }}
-                    <span v-if="item.materyalTuru !== 'Seçim Yok'">
-                        ({{ item.materyalTuru }})
-                    </span>
+                    <span v-if="item.materyalTuru !== 'Seçim Yok'">({{ item.materyalTuru }})</span>
                 </p>
             </div>
 
             <button
                 type="button"
                 @click="deleteItem(item.id)"
-                :class="isDark
-                    ? 'text-slate-500 hover:text-rose-400'
-                    : 'text-slate-300 hover:text-rose-500'"
+                :class="isDark ? 'text-slate-500 hover:text-rose-400' : 'text-slate-300 hover:text-rose-500'"
                 class="p-2 text-xs transition-colors">
                 <i class="fa-solid fa-trash-can"></i>
             </button>
         </div>
     </main>
 
-    <!-- =========================================================
-         YAZDIRMA ŞABLONU
-         ========================================================= -->
-    <div
-        v-for="page in printPages"
-        :key="page.key"
-        class="print-only print-page">
-
-        <h2 class="print-title">
-            EMANET ENVANTER & İMHA KONTROL LİSTESİ
-        </h2>
-
+    <!-- YAZDIRMA ŞABLONU -->
+    <div v-for="page in printPages" :key="page.key" class="print-only print-page">
+        <h2 class="print-title">EMANET ENVANTER & İMHA KONTROL LİSTESİ</h2>
         <div class="print-group-info">
             {{ page.kararYili }}/{{ page.rafGrubu }}
-            <span v-if="page.pageTotal > 1">
-                [{{ page.pageNumber }}/{{ page.pageTotal }}]
-            </span>
+            <span v-if="page.pageTotal > 1">[{{ page.pageNumber }}/{{ page.pageTotal }}]</span>
         </div>
 
         <table class="print-table">
@@ -886,7 +731,6 @@
             </thead>
             <tbody>
                 <tr v-for="row in page.rows" :key="'p-'+row.item.id">
-                    <!-- GRUP BAZLI SIRALI SIRA NO -->
                     <td class="mono">{{ row.index + 1 }}</td>
                     <td class="mono">{{ getEmanetPdfText(row.item) }}</td>
                     <td class="mono">{{ getDosyaPdfText(row.item) }}</td>
@@ -901,100 +745,60 @@
         </table>
 
         <div class="print-footer">
-            <div class="print-total">
-                Toplam Kayıt: {{ page.groupTotal }}
-            </div>
-            <div class="print-date">
-                Kontrol Tarihi: {{ currentDate }}
-            </div>
+            <div class="print-total">Toplam Kayıt: {{ page.groupTotal }}</div>
+            <div class="print-date">Kontrol Tarihi: {{ currentDate }}</div>
         </div>
     </div>
 
 </div>
 
-<!-- =============================================================
-     VUE SCRIPT
-     ============================================================= -->
+<!-- VUE SCRIPT -->
 <script>
     const { createApp, ref, computed, onMounted, watch } = Vue;
 
     createApp({
         setup() {
-            const targetYears = [
-                '2005', '2006', '2007', '2008',
-                '2009', '2010', '2011', '2012',
-                '2013', '2014', '2015', '2016'
-            ];
-
-            const rafGruplari = [
-                '1B', '10B', '20B', '30B',
-                '40B', '50B', '60B', '70B', '80B'
-            ];
-
+            const targetYears = ['2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'];
+            const rafGruplari = ['1B', '10B', '20B', '30B', '40B', '50B', '60B', '70B', '80B'];
             const ROWS_PER_PAGE = 35;
             const items = ref([]);
             const isDark = ref(false);
             const showSettingsModal = ref(false);
             const showResetModal = ref(false);
 
-            /* TOAST BİLDİRİM STATE */
-            const toast = ref({
-                show: false,
-                message: '',
-                type: 'info'
-            });
-
+            const toast = ref({ show: false, message: '', type: 'info' });
             let toastTimeout = null;
             const triggerToast = (msg, type = 'info') => {
                 toast.value.message = msg;
                 toast.value.type = type;
                 toast.value.show = true;
                 if (toastTimeout) clearTimeout(toastTimeout);
-                toastTimeout = setTimeout(() => {
-                    toast.value.show = false;
-                }, 2200);
+                toastTimeout = setTimeout(() => { toast.value.show = false; }, 2200);
             };
 
-            const reversedItems = computed(() => {
-                return [...items.value].reverse();
-            });
+            const reversedItems = computed(() => [...items.value].reverse());
 
             const printPages = computed(() => {
                 const groups = new Map();
-
                 items.value.forEach((item) => {
                     const raf = item.rafGrubu || '1B';
                     const kararYili = item.kararYili || '2013';
                     const key = `${kararYili}/${raf}`;
-
                     if (!groups.has(key)) {
-                        groups.set(key, {
-                            key,
-                            kararYili,
-                            rafGrubu: raf,
-                            rows: []
-                        });
+                        groups.set(key, { key, kararYili, rafGrubu: raf, rows: [] });
                     }
-
                     const currentGroup = groups.get(key);
-                    // Grup bazlı kronolojik index: 0, 1, 2...
-                    currentGroup.rows.push({
-                        item,
-                        index: currentGroup.rows.length
-                    });
+                    currentGroup.rows.push({ item, index: currentGroup.rows.length });
                 });
 
                 const pages = [];
-
                 groups.forEach(group => {
                     const totalRows = group.rows.length;
                     const pageTotal = Math.ceil(totalRows / ROWS_PER_PAGE);
-
                     for (let pageIndex = 0; pageIndex < pageTotal; pageIndex++) {
                         const start = pageIndex * ROWS_PER_PAGE;
                         const end = start + ROWS_PER_PAGE;
                         const rows = group.rows.slice(start, end);
-
                         pages.push({
                             key: `${group.key}-page-${pageIndex + 1}`,
                             kararYili: group.kararYili,
@@ -1006,13 +810,11 @@
                         });
                     }
                 });
-
                 return pages;
             });
 
             const showYear = ref(false);
             const showType = ref(false);
-
             const emanetInput = ref(null);
             const dosyaInput = ref(null);
 
@@ -1033,88 +835,32 @@
             };
 
             const updateBodyBackground = () => {
-                if (isDark.value) {
-                    document.body.style.backgroundColor = '#0b1120';
-                } else {
-                    document.body.style.backgroundColor = '#f1f5f9';
-                }
+                document.body.style.backgroundColor = isDark.value ? '#0b1120' : '#f1f5f9';
             };
 
-            const isFormEmanetYok = computed(() => {
-                const no = (form.value.emanetNo || '').toString().trim().toLowerCase();
-                return no === 'yok';
-            });
-
-            const isFormDosyaYok = computed(() => {
-                const no = (form.value.dosyaNo || '').toString().trim().toLowerCase();
-                return no === 'yok';
-            });
+            const isFormEmanetYok = computed(() => (form.value.emanetNo || '').toString().trim().toLowerCase() === 'yok');
+            const isFormDosyaYok = computed(() => (form.value.dosyaNo || '').toString().trim().toLowerCase() === 'yok');
 
             const toggleEmanetYok = () => {
-                if (isFormEmanetYok.value) {
-                    form.value.emanetNo = '';
-                } else {
-                    form.value.emanetNo = 'Yok';
-                }
+                form.value.emanetNo = isFormEmanetYok.value ? '' : 'Yok';
                 if (emanetInput.value) emanetInput.value.focus();
             };
 
             const toggleDosyaYok = () => {
-                if (isFormDosyaYok.value) {
-                    form.value.dosyaNo = '';
-                } else {
-                    form.value.dosyaNo = 'Yok';
-                }
+                form.value.dosyaNo = isFormDosyaYok.value ? '' : 'Yok';
                 if (dosyaInput.value) dosyaInput.value.focus();
             };
 
-            const isItemEmanetYok = (item) => {
-                if (!item) return false;
-                const no = (item.emanetNo || '').toString().trim().toLowerCase();
-                return no === 'yok';
-            };
+            const isItemEmanetYok = (item) => !item || (item.emanetNo || '').toString().trim().toLowerCase() === 'yok';
+            const isItemDosyaYok = (item) => !item || (item.dosyaNo || '').toString().trim().toLowerCase() === 'yok';
+            const getRafGrubu = (item) => item?.rafGrubu || '1B';
+            const getEmanetPdfText = (item) => isItemEmanetYok(item) ? '' : `${item.emanetYil}/${item.emanetNo}`;
+            const getDosyaPdfText = (item) => isItemDosyaYok(item) ? '' : `${item.dosyaYil}/${item.dosyaNo}`;
+            const getTurPdfText = (item) => (!item || item.materyalTuru === 'Seçim Yok') ? '' : item.materyalTuru;
+            const getEmanetDisplay = (item) => isItemEmanetYok(item) ? 'Emanet Yok' : `${item.emanetYil}/${item.emanetNo}`;
+            const getDosyaDisplay = (item) => isItemDosyaYok(item) ? 'Soruşturma Yok' : `${item.dosyaYil}/${item.dosyaNo}`;
 
-            const isItemDosyaYok = (item) => {
-                if (!item) return false;
-                const no = (item.dosyaNo || '').toString().trim().toLowerCase();
-                return no === 'yok';
-            };
-
-            const getRafGrubu = (item) => {
-                if (!item) return '1B';
-                return item.rafGrubu || '1B';
-            };
-
-            const getEmanetPdfText = (item) => {
-                if (isItemEmanetYok(item)) return '';
-                return `${item.emanetYil}/${item.emanetNo}`;
-            };
-
-            const getDosyaPdfText = (item) => {
-                if (isItemDosyaYok(item)) return '';
-                return `${item.dosyaYil}/${item.dosyaNo}`;
-            };
-
-            const getTurPdfText = (item) => {
-                if (!item || item.materyalTuru === 'Seçim Yok') return '';
-                return item.materyalTuru;
-            };
-
-            const getEmanetDisplay = (item) => {
-                if (isItemEmanetYok(item)) return 'Emanet Yok';
-                return `${item.emanetYil}/${item.emanetNo}`;
-            };
-
-            const getDosyaDisplay = (item) => {
-                if (isItemDosyaYok(item)) return 'Soruşturma Yok';
-                return `${item.dosyaYil}/${item.dosyaNo}`;
-            };
-
-            const currentDate = new Date().toLocaleDateString('tr-TR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
+            const currentDate = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
             const setKararYili = (yr) => {
                 form.value.kararYili = yr;
@@ -1140,7 +886,6 @@
                 if (dosyaInput.value) dosyaInput.value.focus();
             };
 
-            /* JSON DIŞA AKTAR */
             const exportJSON = () => {
                 if (items.value.length === 0) {
                     triggerToast('Dışa aktarılacak kayıt bulunmuyor.', 'info');
@@ -1156,11 +901,9 @@
                 triggerToast('Yedek dosyası indirildi.', 'success');
             };
 
-            /* JSON İÇE AKTAR */
             const importJSON = (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
@@ -1168,7 +911,6 @@
                         if (Array.isArray(parsed)) {
                             const existingIds = new Set(items.value.map(i => i.id));
                             const newEntries = parsed.filter(i => !existingIds.has(i.id));
-                            
                             items.value = [...items.value, ...newEntries];
                             triggerToast(`${newEntries.length} kayıt başarıyla yüklendi.`, 'success');
                             showSettingsModal.value = false;
@@ -1183,7 +925,6 @@
                 event.target.value = '';
             };
 
-            /* SIFIRLAMA KONTROLÜ */
             const promptReset = () => {
                 if (items.value.length === 0) {
                     triggerToast('Zaten sistemde kayıt bulunmuyor.', 'info');
@@ -1193,7 +934,6 @@
                 showResetModal.value = true;
             };
 
-            /* GERÇEK SIFIRLAMA İŞLEMİ */
             const executeReset = () => {
                 items.value = [];
                 localStorage.removeItem('emanet_lite_db');
@@ -1206,30 +946,26 @@
                 if (db) {
                     try {
                         items.value = JSON.parse(db);
-                        items.value = items.value.map(item => ({
-                            ...item,
-                            rafGrubu: item.rafGrubu || '1B'
-                        }));
+                        items.value = items.value.map(item => ({ ...item, rafGrubu: item.rafGrubu || '1B' }));
                     } catch (error) {
                         console.error('Kayıt verisi okunamadı:', error);
                         items.value = [];
                     }
                 }
-
-                const savedDark = localStorage.getItem('emanet_dark_mode');
-                if (savedDark === '1') {
-                    isDark.value = true;
-                }
+                if (localStorage.getItem('emanet_dark_mode') === '1') isDark.value = true;
                 updateBodyBackground();
+
+                // Service Worker Kaydı
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then(() => console.log('Service Worker Aktif!'))
+                        .catch((err) => console.log('SW Kayıt Hatası:', err));
+                }
             });
 
-            watch(
-                items,
-                (newVal) => {
-                    localStorage.setItem('emanet_lite_db', JSON.stringify(newVal));
-                },
-                { deep: true }
-            );
+            watch(items, (newVal) => {
+                localStorage.setItem('emanet_lite_db', JSON.stringify(newVal));
+            }, { deep: true });
 
             const addItem = () => {
                 const newItem = {
@@ -1242,16 +978,10 @@
                     dosyaNo: form.value.dosyaNo,
                     materyalTuru: form.value.materyalTuru
                 };
-
                 items.value.push(newItem);
                 form.value.emanetNo = '';
                 form.value.dosyaNo = '';
-
-                setTimeout(() => {
-                    if (emanetInput.value) {
-                        emanetInput.value.focus();
-                    }
-                }, 50);
+                setTimeout(() => { if (emanetInput.value) emanetInput.value.focus(); }, 50);
             };
 
             const deleteItem = (id) => {
@@ -1264,7 +994,6 @@
                     triggerToast('Kayıt bulunmuyor.', 'info');
                     return;
                 }
-
                 const data = items.value.map((item, idx) => ({
                     'Sıra No.': idx + 1,
                     'Karar Yılı': item.kararYili,
@@ -1273,7 +1002,6 @@
                     'Soruşturma / Esas': getDosyaPdfText(item) || 'Yok',
                     'Emanet Türü': getTurPdfText(item) || ''
                 }));
-
                 const ws = XLSX.utils.json_to_sheet(data);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Envanter");
