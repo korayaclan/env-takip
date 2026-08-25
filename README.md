@@ -1,38 +1,119 @@
-# Envanter & İmha Takip Sistemi
+# Emanet Envanter Sistemi v2
 
-Bu proje, emanet bürolarında veya soruşturma işlemlerinde fiziksel envanterin (zarf, poşet, swap vb.) kayıt altına alınması, gruplanması ve imha süreçlerinin takibi için geliştirilmiş **mobil odaklı, hafif ve hızlı** bir web uygulamasıdır.
+Emanet büroları ve soruşturma süreçlerinde fiziksel emanetlerin (zarf, poşet, swap vb.) saha kaydını hızlandırmak için geliştirilmiş **mobil odaklı, Local-First** web uygulamasıdır.
 
-## 🚀 Proje Amacı
-Yüzlerce emanet parçasının elle not edilmesinden kaynaklanan zaman kaybını ve veri hatalarını ortadan kaldırmak; tamamen tarayıcı tabanlı çalışarak kapalı sistemlerde dahi veri güvenliğini korumak amacıyla tasarlanmıştır.
+Kalem-kağıt ile yapılan kayıt işlemini ortadan kaldırır. Kayıtlar cihaz üzerinde tutulur, herhangi bir sunucuya veya buluta gönderilmez.
 
-## 🛠 Temel Özellikler
-- **Mobil Öncelikli Arayüz:** Akıllı telefon ve tabletlerde seri giriş yapmak için optimize edilmiştir.
-- **Mantıksal Gruplama:** Karar/Grup Yılı mantığı ile emanetleri raf/dosya düzenine göre ayırır.
-- **Hızlı Seri Giriş:** Bir kez yıl seçimi yapıldığında, numaraları ardı ardına ekleyebileceğiniz akıcı bir giriş modu.
-- **Dışa Aktarma:** Tek tıkla Excel (.xlsx) listeleme ve Yazıcı dostu (A4) PDF çıktı alma.
-- **Çevrimdışı Çalışma:** İnternet gerektirmez, tüm veriler tarayıcınızın yerel hafızasında saklanır.
-- **Güvenli Yedekleme:** JSON formatında veri yedekleme ve yükleme desteği.
-
-## 🔒 Veri Güvenliği ve Gizlilik
-Bu uygulama **"Local-First"** prensibiyle çalışır.
-- **Sunucu Yok:** Verileriniz herhangi bir uzak sunucuya, veritabanına veya buluta gönderilmez.
-- **Yerel Saklama:** Tüm kayıtlar sadece kullandığınız cihazın tarayıcısında (LocalStorage) saklanır.
-- **Tam Kontrol:** "Verileri Yedekle" seçeneği ile verilerinizin tam bir kopyasını her zaman kendi bilgisayarınızda tutabilirsiniz.
-
-## 💻 Kullanım Talimatları
-1. **Giriş:** Uygulamayı tarayıcınızda açın.
-2. **Grup Seçimi:** Üst kısımdaki akordiyon menüden ilgili Karar/Grup yılını seçin.
-3. **Kayıt:** Emanet ve Soruşturma numaralarını girerek "Kaydet" butonuna basın.
-4. **Kontrol:** "Liste" sekmesinden kayıtlarınızı görüntüleyin. İmha durumlarını tek tıkla güncelleyin.
-5. **Rapor:** Sağ üstteki butonlarla Excel veya Yazdırma çıktısı alarak fiziksel dosya ile karşılaştırmanızı yapın.
-
-## 📦 Kurulum ve Yayınlama
-Bu uygulama statik HTML/JS yapısında olduğu için herhangi bir sunucu veya veritabanı kurulumu gerektirmez.
-- **GitHub Pages / Cloudflare Pages:** Projenizi doğrudan bu platformlara yükleyerek herhangi bir hosting maliyeti olmadan anında canlıya alabilirsiniz.
-- **Kurulum:** Sadece `index.html` dosyasını sunucunuza atmanız yeterlidir.
-
-## 📄 Lisans
-Bu proje geliştirme aşamasındaki, emanet büroları ve soruşturma takip işlemleri için özelleştirilmiş bir araçtır.
+**Canlı uygulama:** [https://korayaclan.github.io/env-takip/](https://korayaclan.github.io/env-takip/)
 
 ---
-*İhtiyaç duyulması halinde geliştirilmeye ve özelleştirilmeye açıktır.*
+
+## Amaç
+
+İmha sürecinde olan yüzlerce emanet/envanter parçasının elle not edilmesinden kaynaklanan zaman kaybını ve veri hatalarını azaltmak.
+
+Sistem özellikle şu iş akışına göre tasarlanmıştır:
+
+1. Sahada hızlı dijital kayıt alınır
+2. Grup bazlı A4 kontrol listesi yazdırılır
+3. Memurlar UYAP üzerinden soruşturma / emanet numarası kontrolü yapar
+4. İmha edilmeyecek emanetlerin türü basılı liste üzerine kalemle yazılır
+5. İmha / İmha Değil kararı basılı listede işaretlenir
+
+Yani sistem **dijital imha takip sistemi değildir**. Kayıt alma ve kontrol listesi üretme aracıdır.
+
+---
+
+## Temel Özellikler
+
+### Mobil Öncelikli Arayüz
+- Akıllı telefon ve tabletlerde hızlı kullanım için optimize edilmiştir
+- Büyük dokunma alanları ve seri giriş odaklı form yapısı
+- Gece / Gündüz modu
+
+### Mantıksal Gruplama
+- Karar Yılı (2005–2016) ve Raf / Grup (1B–80B) bazlı kayıt
+- Bir kez yıl seçildikten sonra numaraları ardı ardına girebilme
+- “Yok” seçeneği ile hızlı işaretleme
+
+### Yazdırma / A4 Kontrol Listesi
+- Her Karar Yılı / Raf Grubu için ayrı sayfalar
+- Grup bazlı Sıra No. (sayfa değişince devam eder)
+- Grup bazlı “Toplam Kayıt” bilgisi
+- 35 satırlık A4 sayfalama
+- İmha komisyonları için boş onay kutucukları (☐ İmha / ☐ İmha Değil)
+- “Emanet Türü” alanı bilinçli olarak boş bırakılabilir (sonradan kalemle doldurulmak üzere)
+
+### Veri Yönetimi
+- Excel (.xlsx) dışa aktarma
+- JSON formatında yedekleme ve geri yükleme
+- Güvenli sıfırlama (önce yedek hatırlatması yapılır)
+- Tüm veriler tarayıcı LocalStorage’ında tutulur
+
+### Progressive Web App (PWA)
+- Ana ekrana eklenebilir
+- Standalone (adres çubuğu olmadan) açılabilir
+- Temel Service Worker desteği mevcuttur
+
+---
+
+## Veri Güvenliği
+
+Uygulama **Local-First** prensibiyle çalışır:
+
+- Herhangi bir uzak sunucu veya veritabanı yoktur
+- Veriler sadece kullandığınız cihazın tarayıcısında saklanır
+- İstediğiniz zaman JSON yedeği alabilirsiniz
+- Cihaz değiştiğinde veya tarayıcı verileri temizlendiğinde kayıtlar kaybolabilir — düzenli yedek almanız önerilir
+
+---
+
+## Kullanım
+
+1. Uygulamayı tarayıcıda açın (tercihen mobil)
+2. Üst kısımdan Karar Yılı ve Raf / Grup seçin
+3. Emanet No ve Soruşturma / Esas No girerek kaydedin
+4. Liste sekmesinden kayıtları kontrol edin
+5. Excel veya Yazdır butonu ile çıktı alın
+6. Basılı listeyi UYAP kontrolü sonrası kalemle tamamlayın
+
+---
+
+## Teknik Yapı
+
+- Tek sayfa uygulama (HTML + Vue 3)
+- Tailwind CSS
+- SheetJS (Excel)
+- Font Awesome
+- LocalStorage
+- Service Worker + Manifest (PWA)
+
+Herhangi bir sunucu veya veritabanı kurulumu gerektirmez.  
+GitHub Pages, Cloudflare Pages veya benzeri statik hosting’lerde çalışır.
+
+---
+
+## Sınırlamalar (Bilinçli Tasarım)
+
+- Dijital imha durumu takibi yoktur
+- Emanet türü zorunlu değildir (boş bırakılabilir)
+- Yıllar ve raf grupları sabit listelerdir
+- Offline çalışma, ilk yüklemeden sonra kısmen mümkündür (CDN bağımlılıkları nedeniyle tam garantili değildir)
+- Veriler yalnızca bulunduğunuz tarayıcı / cihazda saklanır
+
+---
+
+## Kurulum
+
+1. Repoyu klonlayın veya dosyaları indirin
+2. `index.html` dosyasını herhangi bir statik sunucuya yükleyin
+3. HTTPS üzerinden erişin (PWA için önerilir)
+
+GitHub Pages kullanımı için repo ayarlarından Pages’i aktif etmeniz yeterlidir.
+
+---
+
+## Lisans
+
+Bu proje emanet büroları ve soruşturma takip işlemleri için özelleştirilmiş, geliştirme aşamasındaki bir araçtır.  
+İhtiyaç duyulması halinde geliştirilmeye ve özelleştirilmeye açıktır.
