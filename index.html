@@ -886,6 +886,7 @@
             </thead>
             <tbody>
                 <tr v-for="row in page.rows" :key="'p-'+row.item.id">
+                    <!-- GRUP BAZLI SIRALI SIRA NO -->
                     <td class="mono">{{ row.index + 1 }}</td>
                     <td class="mono">{{ getEmanetPdfText(row.item) }}</td>
                     <td class="mono">{{ getDosyaPdfText(row.item) }}</td>
@@ -901,7 +902,7 @@
 
         <div class="print-footer">
             <div class="print-total">
-                Toplam Kayıt: {{ items.length }}
+                Toplam Kayıt: {{ page.groupTotal }}
             </div>
             <div class="print-date">
                 Kontrol Tarihi: {{ currentDate }}
@@ -961,7 +962,7 @@
             const printPages = computed(() => {
                 const groups = new Map();
 
-                items.value.forEach((item, index) => {
+                items.value.forEach((item) => {
                     const raf = item.rafGrubu || '1B';
                     const kararYili = item.kararYili || '2013';
                     const key = `${kararYili}/${raf}`;
@@ -975,9 +976,11 @@
                         });
                     }
 
-                    groups.get(key).rows.push({
+                    const currentGroup = groups.get(key);
+                    // Grup bazlı kronolojik index: 0, 1, 2...
+                    currentGroup.rows.push({
                         item,
-                        index
+                        index: currentGroup.rows.length
                     });
                 });
 
@@ -998,6 +1001,7 @@
                             rafGrubu: group.rafGrubu,
                             pageNumber: pageIndex + 1,
                             pageTotal,
+                            groupTotal: totalRows,
                             rows
                         });
                     }
