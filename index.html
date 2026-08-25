@@ -340,9 +340,21 @@
                     <i class="fa-solid fa-upload text-slate-400 text-xs"></i>
                     <input type="file" accept=".json" @change="importJSON" class="hidden">
                 </label>
+
+                <!-- VERİLERİ SIFIRLA (YENİ ÖZELLİK) -->
+                <button
+                    type="button"
+                    @click="resetData"
+                    class="w-full p-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 text-xs font-semibold flex items-center justify-between transition">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+                        Verileri Sıfırla (Temizle)
+                    </span>
+                    <i class="fa-solid fa-trash-can text-rose-500 text-xs"></i>
+                </button>
             </div>
 
-            <!-- Kapat Butonu (Gece Modunda Okunabilir Renk) -->
+            <!-- Kapat Butonu -->
             <button
                 type="button"
                 @click="showSettingsModal = false"
@@ -1058,6 +1070,29 @@
                 event.target.value = '';
             };
 
+            /* VERİLERİ SIFIRLA (YEDEK UYARILI) */
+            const resetData = () => {
+                if (items.value.length === 0) {
+                    alert('Zaten sistemde kayıt bulunmuyor.');
+                    return;
+                }
+
+                // 1. Adım: Kullanıcıya yedek alıp almadığını soran net bir uyarı
+                const yedekAlindi = confirm("⚠️ DİKKAT!\n\nMevcut tüm veriler silinecektir.\n\nVerilerinizin yedeğini (JSON Dışa Aktar ile) aldığınızdan emin misiniz?");
+                
+                if (yedekAlindi) {
+                    // 2. Adım: Son bir kez daha kesin onay alalım
+                    const kesinKarar = confirm("⚠️ SON UYARI: Silinen veriler geri getirilemez!\n\nSıfırlamak istediğinize emin misiniz?");
+                    
+                    if (kesinKarar) {
+                        items.value = [];
+                        localStorage.removeItem('emanet_lite_db');
+                        showSettingsModal.value = false;
+                        alert('Tüm veriler başarıyla sıfırlandı.');
+                    }
+                }
+            };
+
             onMounted(() => {
                 const db = localStorage.getItem('emanet_lite_db');
                 if (db) {
@@ -1166,6 +1201,7 @@
                 exportExcel,
                 exportJSON,
                 importJSON,
+                resetData,
                 triggerPrint,
                 isFormEmanetYok,
                 isFormDosyaYok,
