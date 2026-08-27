@@ -305,8 +305,9 @@
                 Excel
             </button>
 
+            <!-- YAZDIR BUTONU (ÖNCE YEDEK MODALINI AÇAR) -->
             <button
-                @click="triggerPrint"
+                @click="openPrintModal"
                 class="bg-slate-700 active:bg-slate-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow">
                 <i class="fa-solid fa-print"></i>
                 Yazdır
@@ -322,6 +323,96 @@
             </button>
         </div>
     </header>
+
+    <!-- =========================================================
+         YAZDIRMA ÖNCESİ ZORUNLU YEDEKLEME MODALI
+         ========================================================= -->
+    <div
+        v-if="showPrintModal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print">
+        
+        <div
+            :class="isDark ? 'bg-[#1e293b] border-slate-700 text-slate-100' : 'bg-white border-slate-200 text-slate-800'"
+            class="w-full max-w-xs rounded-2xl p-4 shadow-2xl border space-y-3 transition-colors">
+            
+            <div class="flex justify-between items-center border-b pb-2" :class="isDark ? 'border-slate-700' : 'border-slate-100'">
+                <h3 class="font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 text-blue-500">
+                    <i class="fa-solid fa-shield-halved"></i> YAZDIRMA ÖNCESİ YEDEK
+                </h3>
+                <button @click="showPrintModal = false" class="text-slate-400 hover:text-slate-200 p-1">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <p class="text-[11px] opacity-80 leading-relaxed text-left">
+                PDF oluşturmadan önce mevcut kayıtların JSON yedeği alınmalıdır. Veri güvenliği için yazdırma işlemi yedek alınmadan başlatılamaz.
+            </p>
+
+            <!-- AŞAMA 1: VERİ YEDEĞİ -->
+            <div 
+                :class="isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'"
+                class="p-2.5 rounded-xl border space-y-2">
+                
+                <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-[11px] font-bold">① VERİ YEDEĞİ</span>
+                    <span v-if="isBackupTaken" class="text-emerald-500 font-bold text-[10px] flex items-center gap-1">
+                        <i class="fa-solid fa-circle-check"></i> JSON YEDEĞİ ALINDI
+                    </span>
+                    <span v-else class="text-slate-400 font-medium text-[10px] flex items-center gap-1">
+                        <i class="fa-regular fa-square"></i> Yedek henüz alınmadı
+                    </span>
+                </div>
+
+                <button
+                    type="button"
+                    @click="takeBackupInModal"
+                    :class="isBackupTaken 
+                        ? 'bg-emerald-600/20 text-emerald-500 border border-emerald-500/30' 
+                        : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20'"
+                    class="w-full py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    <i :class="isBackupTaken ? 'fa-solid fa-check' : 'fa-solid fa-download'"></i>
+                    {{ isBackupTaken ? 'YEDEK ALINDI (TEKRAR AL)' : 'JSON YEDEĞİNİ AL' }}
+                </button>
+            </div>
+
+            <!-- AŞAMA 2: YAZDIRMA (KİLİTLİ / AKTİF) -->
+            <div 
+                :class="isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'"
+                class="p-2.5 rounded-xl border space-y-2">
+                
+                <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-[11px] font-bold">② YAZDIRMA</span>
+                    <span v-if="!isBackupTaken" class="text-amber-500 font-medium text-[10px]">
+                        <i class="fa-solid fa-lock"></i> Kilitli
+                    </span>
+                    <span v-else class="text-blue-500 font-bold text-[10px]">
+                        <i class="fa-solid fa-lock-open"></i> Hazır
+                    </span>
+                </div>
+
+                <button
+                    type="button"
+                    @click="executePrintFromModal"
+                    :disabled="!isBackupTaken"
+                    :class="!isBackupTaken 
+                        ? 'opacity-40 cursor-not-allowed bg-slate-600 text-white' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/30 active:scale-[0.99]'"
+                    class="w-full py-2.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-print"></i>
+                    YAZDIR
+                </button>
+            </div>
+
+            <!-- İPTAL / KAPAT -->
+            <button
+                type="button"
+                @click="showPrintModal = false"
+                :class="isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200'"
+                class="w-full py-2 rounded-xl text-xs font-semibold transition border mt-1">
+                İptal / Kapat
+            </button>
+        </div>
+    </div>
 
     <!-- AYARLAR POP-UP MODALI -->
     <div
@@ -766,6 +857,10 @@
             const showSettingsModal = ref(false);
             const showResetModal = ref(false);
 
+            /* YAZDIRMA GÜVENLİK MODALI DURUMLARI */
+            const showPrintModal = ref(false);
+            const isBackupTaken = ref(false);
+
             const toast = ref({ show: false, message: '', type: 'info' });
             let toastTimeout = null;
             const triggerToast = (msg, type = 'info') => {
@@ -941,6 +1036,31 @@
                 triggerToast('Tüm veriler başarıyla sıfırlandı.', 'success');
             };
 
+            /* YAZDIRMA ÖNCESİ GÜVENLİK MODALI METOTLARI */
+            const openPrintModal = () => {
+                if (items.value.length === 0) {
+                    triggerToast('Yazdırılacak kayıt bulunmuyor.', 'info');
+                    return;
+                }
+                // Her yeni açılışta güvenlik kilidini zorunlu kıl
+                isBackupTaken.value = false;
+                showPrintModal.value = true;
+            };
+
+            const takeBackupInModal = () => {
+                exportJSON();
+                isBackupTaken.value = true;
+            };
+
+            const executePrintFromModal = () => {
+                if (!isBackupTaken.value) return;
+                showPrintModal.value = false;
+                // Modalin kapanma animasyonundan hemen sonra yazdırmayı başlat
+                setTimeout(() => {
+                    window.print();
+                }, 150);
+            };
+
             onMounted(() => {
                 const db = localStorage.getItem('emanet_lite_db');
                 if (db) {
@@ -955,7 +1075,6 @@
                 if (localStorage.getItem('emanet_dark_mode') === '1') isDark.value = true;
                 updateBodyBackground();
 
-                // Service Worker Kaydı
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('./sw.js')
                         .then(() => console.log('Service Worker Aktif!'))
@@ -1009,14 +1128,6 @@
                 triggerToast('Excel tablosu indirildi.', 'success');
             };
 
-            const triggerPrint = () => {
-                if (items.value.length === 0) {
-                    triggerToast('Yazdırılacak kayıt bulunmuyor.', 'info');
-                    return;
-                }
-                window.print();
-            };
-
             return {
                 targetYears,
                 rafGruplari,
@@ -1027,6 +1138,8 @@
                 showType,
                 showSettingsModal,
                 showResetModal,
+                showPrintModal,
+                isBackupTaken,
                 toast,
                 form,
                 emanetInput,
@@ -1043,7 +1156,9 @@
                 importJSON,
                 promptReset,
                 executeReset,
-                triggerPrint,
+                openPrintModal,
+                takeBackupInModal,
+                executePrintFromModal,
                 isFormEmanetYok,
                 isFormDosyaYok,
                 toggleEmanetYok,
