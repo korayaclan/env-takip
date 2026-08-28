@@ -981,15 +981,26 @@
                 if (dosyaInput.value) dosyaInput.value.focus();
             };
 
+            /* GÜNCELLENEN JSON DIŞA AKTARIM FONKSİYONU */
             const exportJSON = () => {
                 if (items.value.length === 0) {
                     triggerToast('Dışa aktarılacak kayıt bulunmuyor.', 'info');
                     return;
                 }
+
+                const now = new Date();
+                const pad = (n) => String(n).padStart(2, '0');
+                const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+                const timeStr = `${pad(now.getHours())}-${pad(now.getMinutes())}`;
+                const kYil = form.value.kararYili || 'Genel';
+                const rGrup = form.value.rafGrubu || '1B';
+
+                const fileName = `emanet_${kYil}_${rGrup}_${dateStr}_${timeStr}.json`;
+
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(items.value, null, 2));
                 const downloadAnchor = document.createElement('a');
                 downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `emanet_yedek_${new Date().toISOString().slice(0, 10)}.json`);
+                downloadAnchor.setAttribute("download", fileName);
                 document.body.appendChild(downloadAnchor);
                 downloadAnchor.click();
                 downloadAnchor.remove();
