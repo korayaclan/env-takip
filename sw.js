@@ -1,4 +1,4 @@
-const CACHE_NAME = 'emanet-envanter-v3-cache-v1';
+const CACHE_NAME = 'emanet-envanter-v2-cache-v1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
