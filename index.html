@@ -282,46 +282,20 @@
     <!-- HEADER -->
     <header
         class="bg-[#0f172a] text-white px-3 py-2.5 sticky top-0 z-50 shadow-md no-print flex justify-between items-center shrink-0 border-b border-slate-800">
-
         <div>
             <div class="flex items-center gap-1.5">
-                <h1 class="font-bold text-base leading-tight whitespace-nowrap">
-                    Envanter Takip
-                </h1>
-                <span class="bg-amber-500 text-xs font-bold px-1.5 py-0.5 rounded text-white shadow-sm">
-                    v3
-                </span>
+                <h1 class="font-bold text-base leading-tight whitespace-nowrap">Envanter Takip</h1>
+                <span class="bg-amber-500 text-xs font-bold px-1.5 py-0.5 rounded text-white shadow-sm">v3</span>
             </div>
-            <p class="text-[11px] text-slate-400 whitespace-nowrap">
-                Saha Kayıt Modülü
-            </p>
+            <p class="text-[11px] text-slate-400 whitespace-nowrap">Saha Kayıt Modülü</p>
         </div>
-
-        <div class="flex items-center gap-1">
-            <button
-                @click="exportExcel"
-                class="bg-emerald-600 active:bg-emerald-700 text-white px-2.5 min-h-[44px] rounded-lg text-sm font-semibold flex items-center gap-1 shadow">
-                <i class="fa-solid fa-file-excel"></i>
-                Excel
-            </button>
-
-            <!-- YAZDIR BUTONU (ÖNCE YEDEK MODALINI AÇAR) -->
-            <button
-                @click="openPrintModal"
-                class="bg-slate-700 active:bg-slate-600 text-white px-2.5 min-h-[44px] rounded-lg text-sm font-semibold flex items-center gap-1 shadow">
-                <i class="fa-solid fa-print"></i>
-                Yazdır
-            </button>
-
-            <!-- ÇARK / AYARLAR POP-UP BUTONU -->
-            <button
-                type="button"
-                @click="showSettingsModal = true"
-                title="Seçenekler"
-                class="w-11 h-11 rounded-lg flex items-center justify-center text-base transition shadow bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700">
-                <i class="fa-solid fa-gear"></i>
-            </button>
-        </div>
+        <button
+            type="button"
+            @click="toggleDarkMode"
+            title="Gece / Gündüz"
+            class="w-11 h-11 rounded-lg flex items-center justify-center text-base shadow bg-slate-800 active:scale-95 text-slate-200 border border-slate-700">
+            <i :class="isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon'"></i>
+        </button>
     </header>
 
     <!-- =========================================================
@@ -347,6 +321,7 @@
             <p class="text-[11px] opacity-80 leading-relaxed text-left">
                 PDF oluşturmadan önce mevcut kayıtların JSON yedeği alınmalıdır. Veri güvenliği için yazdırma işlemi yedek alınmadan başlatılamaz.
             </p>
+            <p class="text-xs font-bold text-blue-500">Yazdırılacak: {{ printGroupKey || 'Tüm gruplar' }}</p>
 
             <!-- AŞAMA 1: VERİ YEDEĞİ -->
             <div 
@@ -539,8 +514,8 @@
         </div>
     </div>
 
-    <!-- FORM & AYARLAR -->
-    <div class="p-3 pb-1 space-y-2.5 shrink-0 max-h-[72dvh] overflow-y-auto no-print">
+    <!-- ============ SEKME: KAYIT ============ -->
+    <div v-show="tab === 'kayit'" class="flex-1 min-h-0 overflow-y-auto p-3 space-y-2.5 custom-scroll no-print">
         <div
             :class="isDark ? 'bg-[#1e293b] border-slate-700 shadow-slate-950/50' : 'bg-white border-slate-200'"
             class="rounded-xl shadow-sm border p-2.5 transition-colors">
@@ -613,136 +588,103 @@
             </div>
         </div>
 
-        <form
-            @submit.prevent="addItem"
+        <div
             :class="isDark ? 'bg-[#1e293b] border-slate-700 shadow-slate-950/50' : 'bg-white border-slate-200'"
             class="p-3 rounded-xl shadow-sm border space-y-2.5 transition-colors">
 
-            <!-- EMANET NO -->
             <div class="space-y-1">
                 <div class="flex justify-between items-center">
-                    <label :class="isDark ? 'text-slate-400' : 'text-slate-600'" class="text-xs font-bold uppercase tracking-wider">
-                        Emanet No
-                    </label>
+                    <label :class="isDark ? 'text-slate-400' : 'text-slate-600'" class="text-xs font-bold uppercase tracking-wider">Emanet No</label>
                     <div class="flex gap-1.5">
                         <button
                             type="button"
                             v-for="yOff in [0,1,2,3]"
-                            :key="'ey-'+yOff"
+                            :key="'emanety-'+yOff"
                             @mousedown.prevent
                             @click="setEmanetYil((parseInt(form.kararYili || 2013) - yOff).toString())"
                             :class="form.emanetYil === (parseInt(form.kararYili || 2013) - yOff).toString()
                                 ? 'bg-blue-600 text-white font-bold shadow-sm'
                                 : isDark
-                                    ? 'bg-[#0f172a] text-slate-400 border border-slate-700 hover:bg-slate-800'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                    ? 'bg-[#0f172a] text-slate-400 border border-slate-700'
+                                    : 'bg-slate-100 text-slate-600'"
                             class="px-2.5 min-h-[36px] text-xs rounded-lg font-mono transition">
                             {{ parseInt(form.kararYili || 2013) - yOff }}
                         </button>
                     </div>
                 </div>
-
-                <div :class="isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white'" class="flex border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 items-center">
+                <div :class="[isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white', activeField === 'emanet' ? 'ring-2 ring-blue-500 border-blue-500' : '']" class="flex border rounded-xl overflow-hidden items-center">
                     <input
                         type="text"
                         inputmode="numeric"
                         v-model="form.emanetYil"
-                        required
                         :class="isDark ? 'bg-[#0f172a] text-slate-200 border-slate-700' : 'bg-slate-50 text-slate-900 border-slate-200'"
                         class="w-20 p-3 text-center font-bold text-base border-r outline-none">
                     <input
                         type="text"
-                        inputmode="numeric"
+                        :inputmode="useSysKb ? 'numeric' : 'none'"
+                        :readonly="!useSysKb"
                         v-model="form.emanetNo"
-                        placeholder="Numara Yazınız"
-                        required
+                        @focus="activeField = 'emanet'"
+                        @click="activeField = 'emanet'"
+                        placeholder="Numara"
                         ref="emanetInput"
                         :class="isDark ? 'bg-[#0f172a] text-slate-100 placeholder-slate-500' : 'bg-white text-slate-900 placeholder-slate-400'"
-                        class="flex-1 p-3 text-lg font-mono outline-none min-w-0">
-                    <button
-                        type="button"
-                        @mousedown.prevent
-                        @click="toggleEmanetYok"
-                        :class="isFormEmanetYok ? 'bg-amber-500 text-white' : isDark ? 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200'"
-                        class="px-4 py-3 text-sm font-bold border-l transition shrink-0">
-                        Yok
-                    </button>
+                        class="flex-1 p-3 text-2xl font-mono font-bold outline-none min-w-0">
                 </div>
             </div>
 
-            <!-- SORUŞTURMA / ESAS NO -->
             <div class="space-y-1">
                 <div class="flex justify-between items-center">
-                    <label :class="isDark ? 'text-slate-400' : 'text-slate-600'" class="text-xs font-bold uppercase tracking-wider">
-                        Soruşturma / Esas No
-                    </label>
+                    <label :class="isDark ? 'text-slate-400' : 'text-slate-600'" class="text-xs font-bold uppercase tracking-wider">Soruşturma / Esas No</label>
                     <div class="flex gap-1.5">
                         <button
                             type="button"
                             v-for="yOff in [0,1,2,3]"
-                            :key="'sy-'+yOff"
+                            :key="'dosyay-'+yOff"
                             @mousedown.prevent
                             @click="setDosyaYil((parseInt(form.kararYili || 2013) - yOff).toString())"
                             :class="form.dosyaYil === (parseInt(form.kararYili || 2013) - yOff).toString()
                                 ? 'bg-blue-600 text-white font-bold shadow-sm'
                                 : isDark
-                                    ? 'bg-[#0f172a] text-slate-400 border border-slate-700 hover:bg-slate-800'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                    ? 'bg-[#0f172a] text-slate-400 border border-slate-700'
+                                    : 'bg-slate-100 text-slate-600'"
                             class="px-2.5 min-h-[36px] text-xs rounded-lg font-mono transition">
                             {{ parseInt(form.kararYili || 2013) - yOff }}
                         </button>
                     </div>
                 </div>
-
-                <div :class="isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white'" class="flex border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 items-center">
+                <div :class="[isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white', activeField === 'dosya' ? 'ring-2 ring-blue-500 border-blue-500' : '']" class="flex border rounded-xl overflow-hidden items-center">
                     <input
                         type="text"
                         inputmode="numeric"
                         v-model="form.dosyaYil"
-                        required
                         :class="isDark ? 'bg-[#0f172a] text-slate-200 border-slate-700' : 'bg-slate-50 text-slate-900 border-slate-200'"
                         class="w-20 p-3 text-center font-bold text-base border-r outline-none">
                     <input
                         type="text"
-                        inputmode="numeric"
+                        :inputmode="useSysKb ? 'numeric' : 'none'"
+                        :readonly="!useSysKb"
                         v-model="form.dosyaNo"
-                        placeholder="Numara Yazınız"
-                        required
+                        @focus="activeField = 'dosya'"
+                        @click="activeField = 'dosya'"
+                        placeholder="Numara"
                         ref="dosyaInput"
                         :class="isDark ? 'bg-[#0f172a] text-slate-100 placeholder-slate-500' : 'bg-white text-slate-900 placeholder-slate-400'"
-                        class="flex-1 p-3 text-lg font-mono outline-none min-w-0">
-                    <button
-                        type="button"
-                        @mousedown.prevent
-                        @click="toggleDosyaYok"
-                        :class="isFormDosyaYok ? 'bg-amber-500 text-white' : isDark ? 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200'"
-                        class="px-4 py-3 text-sm font-bold border-l transition shrink-0">
-                        Yok
-                    </button>
+                        class="flex-1 p-3 text-2xl font-mono font-bold outline-none min-w-0">
                 </div>
             </div>
 
-            <button
-                type="submit"
-                class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-emerald-600/20 text-base transition">
-                KAYDET VE LİSTEYE EKLE
-            </button>
-
             <!-- EMANET TÜRÜ -->
-            <div :class="isDark ? 'border-slate-700' : 'border-slate-100'" class="border-t pt-2">
+            <div :class="isDark ? 'border-slate-700' : 'border-slate-100'" class="border-t pt-1">
                 <button
                     type="button"
                     @click="showType = !showType"
                     :class="isDark ? 'text-slate-300' : 'text-slate-600'"
                     class="w-full flex justify-between items-center text-sm font-semibold min-h-[44px]">
-                    <span>
-                        Emanet Türü:
-                        <strong class="text-blue-500 ml-1">{{ form.materyalTuru }}</strong>
-                    </span>
+                    <span>Emanet Türü: <strong class="text-blue-500 ml-1">{{ form.materyalTuru }}</strong></span>
                     <i :class="showType ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-slate-400 text-xs"></i>
                 </button>
-
-                <div v-show="showType" class="flex flex-wrap gap-1.5 mt-2">
+                <div v-show="showType" class="flex flex-wrap gap-1.5 mt-1">
                     <button
                         type="button"
                         v-for="t in materyalTurleri"
@@ -750,15 +692,77 @@
                         @click="form.materyalTuru=t; showType=false"
                         :class="form.materyalTuru === t
                             ? 'bg-blue-600 text-white font-bold shadow-sm'
-                            : isDark ? 'bg-[#0f172a] text-slate-300 border-slate-700 hover:bg-slate-800 border' : 'bg-slate-100 text-slate-700 border border-slate-200'"
+                            : isDark ? 'bg-[#0f172a] text-slate-300 border-slate-700 border' : 'bg-slate-100 text-slate-700 border border-slate-200'"
                         class="px-3 min-h-[40px] rounded-lg text-sm transition">
                         {{ t }}
                     </button>
                 </div>
             </div>
-        </form>
+        </div>
+
+        <!-- NUMARA TUŞ TAKIMI -->
+        <div class="space-y-1.5">
+            <div class="flex items-center justify-between min-h-[40px] px-1 gap-2">
+                <p v-if="lastAdded" :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="text-sm font-mono truncate">
+                    Son: {{ getEmanetDisplay(lastAdded) }} · {{ getDosyaDisplay(lastAdded) }}
+                </p>
+                <p v-else :class="isDark ? 'text-slate-500' : 'text-slate-400'" class="text-sm">Henüz kayıt yok</p>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" @click="useSysKb = !useSysKb; if (useSysKb && emanetInput) emanetInput.focus()"
+                        :class="useSysKb ? 'bg-blue-600 text-white' : isDark ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-600'"
+                        class="min-h-[36px] px-3 rounded-lg text-sm font-semibold" title="Telefon klavyesi">
+                        <i class="fa-solid fa-keyboard"></i>
+                    </button>
+                    <button v-if="lastAdded" type="button" @click="undoLast"
+                        class="min-h-[36px] px-3 rounded-lg text-sm font-bold bg-rose-500/10 text-rose-500 border border-rose-500/30">
+                        <i class="fa-solid fa-rotate-left mr-1"></i>Geri al
+                    </button>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-1.5">
+                <button
+                    v-for="k in padKeys"
+                    :key="'pad-'+k"
+                    type="button"
+                    @mousedown.prevent
+                    @click="pressKey(k)"
+                    :class="k === 'yok'
+                        ? (activeIsYok ? 'bg-amber-500 text-white' : isDark ? 'bg-slate-700 text-amber-300' : 'bg-amber-100 text-amber-800')
+                        : k === 'back'
+                            ? (isDark ? 'bg-slate-700 text-slate-100' : 'bg-slate-200 text-slate-700')
+                            : (isDark ? 'bg-[#1e293b] text-slate-100 border border-slate-700' : 'bg-white text-slate-900 border border-slate-300')"
+                    class="min-h-[50px] rounded-xl text-2xl font-mono font-bold active:scale-95 transition shadow-sm">
+                    <i v-if="k === 'back'" class="fa-solid fa-delete-left"></i>
+                    <span v-else-if="k === 'yok'" class="text-lg font-sans">Yok</span>
+                    <span v-else>{{ k }}</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-1.5">
+                <button
+                    type="button"
+                    @mousedown.prevent
+                    @click="switchField"
+                    :class="isDark ? 'bg-slate-700 text-slate-100' : 'bg-slate-200 text-slate-700'"
+                    class="min-h-[52px] rounded-xl text-sm font-bold leading-tight px-1 active:scale-95">
+                    <i :class="activeField === 'emanet' ? 'fa-solid fa-arrow-right' : 'fa-solid fa-arrow-left'" class="mr-1"></i>
+                    {{ activeField === 'emanet' ? 'Soruşturma' : 'Emanet' }}
+                </button>
+                <button
+                    type="button"
+                    @click="addItem"
+                    :class="justSaved ? 'bg-emerald-400' : 'bg-emerald-600 hover:bg-emerald-700'"
+                    class="col-span-2 min-h-[52px] rounded-xl text-white font-bold text-lg shadow-md shadow-emerald-600/20 active:scale-[0.98] transition">
+                    <i :class="justSaved ? 'fa-solid fa-circle-check' : 'fa-solid fa-check'" class="mr-1"></i>
+                    {{ justSaved ? 'KAYDEDİLDİ' : 'KAYDET' }}
+                </button>
+            </div>
+
+        </div>
     </div>
 
+    <!-- ============ SEKME: LİSTE ============ -->
+    <div v-show="tab === 'liste'" class="flex-1 min-h-0 flex flex-col no-print">
     <!-- LİSTE ARAMA / FİLTRE -->
     <div class="px-3 pt-2 pb-1 shrink-0 no-print flex gap-2 items-center">
         <div :class="isDark ? 'bg-[#1e293b] border-slate-700' : 'bg-white border-slate-300'" class="flex-1 flex items-center border rounded-xl px-3 min-h-[44px] focus-within:ring-2 focus-within:ring-blue-500">
@@ -827,6 +831,66 @@
             </button>
         </div>
     </main>
+    </div>
+
+    <!-- ============ SEKME: ÇIKTI ============ -->
+    <div v-show="tab === 'cikti'" class="flex-1 min-h-0 overflow-y-auto p-3 space-y-3 custom-scroll no-print">
+        <div :class="isDark ? 'bg-[#1e293b] border-slate-700' : 'bg-white border-slate-200'" class="rounded-xl border p-3 space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider opacity-70">Gruplar</h3>
+            <p v-if="groupSummaries.length === 0" class="text-sm opacity-60">Henüz kayıt yok.</p>
+            <div v-for="g in groupSummaries" :key="'gs-'+g.key" class="flex items-center justify-between gap-2 min-h-[48px]">
+                <div class="leading-tight">
+                    <div class="font-mono font-bold text-lg">{{ g.key }}</div>
+                    <div class="text-xs opacity-60">{{ g.count }} kayıt<span v-if="g.yok"> · {{ g.yok }} tanesinde "Yok" var</span></div>
+                </div>
+                <button type="button" @click="openPrintModal(g.key)" class="min-h-[44px] px-4 rounded-xl bg-blue-600 text-white text-sm font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> Yazdır
+                </button>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <button type="button" @click="openPrintModal(null)" class="w-full min-h-[52px] rounded-xl bg-slate-700 text-white text-base font-bold flex items-center justify-center gap-2">
+                <i class="fa-solid fa-print"></i> Tüm grupları yazdır
+            </button>
+            <button type="button" @click="exportExcel" class="w-full min-h-[52px] rounded-xl bg-emerald-600 text-white text-base font-bold flex items-center justify-center gap-2">
+                <i class="fa-solid fa-file-excel"></i> Excel'e aktar
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" @click="exportJSON" :class="isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-white border-slate-300 text-slate-700'" class="min-h-[52px] rounded-xl border text-sm font-semibold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-export text-emerald-500"></i> JSON yedek
+                </button>
+                <label :class="isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-white border-slate-300 text-slate-700'" class="min-h-[52px] rounded-xl border text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-file-import text-blue-500"></i> Yedek yükle
+                    <input type="file" accept=".json" @change="importJSON" class="hidden">
+                </label>
+            </div>
+            <button type="button" @click="promptReset" class="w-full min-h-[52px] rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-500 text-sm font-semibold flex items-center justify-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i> Verileri sıfırla
+            </button>
+        </div>
+    </div>
+
+    <!-- ALT SEKME ÇUBUĞU -->
+    <nav
+        :class="isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'"
+        class="shrink-0 grid grid-cols-3 border-t no-print"
+        style="padding-bottom: env(safe-area-inset-bottom)">
+        <button
+            v-for="t in tabs"
+            :key="'tab-'+t.id"
+            type="button"
+            @click="tab = t.id"
+            :class="tab === t.id ? 'text-indigo-500' : 'text-slate-400'"
+            class="min-h-[58px] flex flex-col items-center justify-center gap-0.5 text-xs font-bold relative">
+            <span class="relative">
+                <i :class="t.icon" class="text-lg"></i>
+                <span v-if="t.id === 'liste' && items.length" class="absolute -top-1.5 left-3 min-w-[18px] px-1 h-[18px] rounded-full bg-indigo-600 text-white text-[10px] leading-[18px] text-center">{{ items.length }}</span>
+            </span>
+            {{ t.label }}
+            <span v-if="tab === t.id" class="absolute top-0 left-6 right-6 h-0.5 bg-indigo-500 rounded-b"></span>
+        </button>
+    </nav>
 
     <!-- KAYIT DÜZENLEME MODALI -->
     <div
@@ -953,6 +1017,19 @@
             const rafGruplari = ['1B', '10B', '20B', '30B', '40B', '50B', '60B', '70B', '80B'];
             const ROWS_PER_PAGE = 35;
             const materyalTurleri = ['Seçim Yok', 'Zarf', 'Poşet', 'Kutu', 'Çek/Senet', 'Abonelik Aslı', 'Eşya', 'Elektronik Eşya', 'Dijital Materyal', 'Swap', 'Bilinmiyor'];
+            const tabs = [
+                { id: 'kayit', label: 'Kayıt', icon: 'fa-solid fa-pen-to-square' },
+                { id: 'liste', label: 'Liste', icon: 'fa-solid fa-list-ul' },
+                { id: 'cikti', label: 'Çıktı', icon: 'fa-solid fa-print' }
+            ];
+            const padKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'back', '0', 'yok'];
+            const tab = ref('kayit');
+            const activeField = ref('emanet');
+            const useSysKb = ref(false);
+            const lastAdded = ref(null);
+            const justSaved = ref(false);
+            let justSavedTimer = null;
+            const printGroupKey = ref(null);
             const items = ref([]);
             const searchText = ref('');
             const onlyActiveGroup = ref(true);
@@ -984,6 +1061,25 @@
                 items.value.filter(i => i.kararYili === form.value.kararYili && (i.rafGrubu || '1B') === form.value.rafGrubu).length
             );
 
+            const groupSummaries = computed(() => {
+                const m = new Map();
+                items.value.forEach(i => {
+                    const raf = i.rafGrubu || '1B';
+                    const key = `${i.kararYili}/${raf}`;
+                    if (!m.has(key)) m.set(key, { key, kararYili: i.kararYili, raf, count: 0, yok: 0 });
+                    const g = m.get(key);
+                    g.count++;
+                    if (String(i.emanetNo).trim().toLowerCase() === 'yok' || String(i.dosyaNo).trim().toLowerCase() === 'yok') g.yok++;
+                });
+                const rafOrder = (r) => parseInt(r) || 0;
+                return [...m.values()].sort((a, b) => a.kararYili.localeCompare(b.kararYili) || rafOrder(a.raf) - rafOrder(b.raf));
+            });
+
+            const activeIsYok = computed(() => {
+                const v = activeField.value === 'emanet' ? form.value.emanetNo : form.value.dosyaNo;
+                return String(v || '').trim().toLowerCase() === 'yok';
+            });
+
             const visibleItems = computed(() => {
                 const q = searchText.value.trim().toLowerCase();
                 return reversedItems.value.filter(i => {
@@ -1002,6 +1098,7 @@
                     const raf = item.rafGrubu || '1B';
                     const kararYili = item.kararYili || '2013';
                     const key = `${kararYili}/${raf}`;
+                    if (printGroupKey.value && key !== printGroupKey.value) return;
                     if (!groups.has(key)) {
                         groups.set(key, { key, kararYili, rafGrubu: raf, rows: [] });
                     }
@@ -1096,12 +1193,35 @@
 
             const setEmanetYil = (yr) => {
                 form.value.emanetYil = yr;
-                if (emanetInput.value) emanetInput.value.focus();
+                activeField.value = 'emanet';
             };
 
             const setDosyaYil = (yr) => {
                 form.value.dosyaYil = yr;
-                if (dosyaInput.value) dosyaInput.value.focus();
+                activeField.value = 'dosya';
+            };
+
+            const pressKey = (k) => {
+                const field = activeField.value === 'emanet' ? 'emanetNo' : 'dosyaNo';
+                let v = String(form.value[field] || '');
+                const isYok = v.trim().toLowerCase() === 'yok';
+                if (k === 'back') v = isYok ? '' : v.slice(0, -1);
+                else if (k === 'yok') v = isYok ? '' : 'Yok';
+                else v = (isYok ? '' : v) + k;
+                form.value[field] = v;
+                if (navigator.vibrate) navigator.vibrate(8);
+            };
+
+            const switchField = () => {
+                activeField.value = activeField.value === 'emanet' ? 'dosya' : 'emanet';
+            };
+
+            const undoLast = () => {
+                if (!lastAdded.value) return;
+                const id = lastAdded.value.id;
+                items.value = items.value.filter(i => i.id !== id);
+                lastAdded.value = null;
+                triggerToast('Son kayıt geri alındı.', 'info');
             };
 
             /* GÜNCELLENEN JSON DIŞA AKTARIM FONKSİYONU */
@@ -1171,7 +1291,8 @@
             };
 
             /* YAZDIRMA ÖNCESİ GÜVENLİK MODALI METOTLARI */
-            const openPrintModal = () => {
+            const openPrintModal = (key = null) => {
+                printGroupKey.value = key;
                 if (items.value.length === 0) {
                     triggerToast('Yazdırılacak kayıt bulunmuyor.', 'info');
                     return;
@@ -1192,6 +1313,7 @@
                 // Modalin kapanma animasyonundan hemen sonra yazdırmayı başlat
                 setTimeout(() => {
                     window.print();
+                    setTimeout(() => { printGroupKey.value = null; }, 500);
                 }, 150);
             };
 
@@ -1223,14 +1345,29 @@
             const addItem = () => {
                 const eNo = (form.value.emanetNo || '').toString().trim();
                 const dNo = (form.value.dosyaNo || '').toString().trim();
-                if (eNo.toLowerCase() !== 'yok' && dNo.toLowerCase() !== 'yok') {
-                    const dupKey = `${form.value.emanetYil}/${eNo}|${form.value.dosyaYil}/${dNo}`;
-                    const dup = items.value.find(i => `${i.emanetYil}/${(i.emanetNo || '').toString().trim()}|${i.dosyaYil}/${(i.dosyaNo || '').toString().trim()}` === dupKey);
-                    if (dup && lastDupKey !== dupKey) {
-                        lastDupKey = dupKey;
-                        triggerToast(`Bu kayıt zaten var (${dup.kararYili}/${dup.rafGrubu || '1B'}). Yine de eklemek için tekrar Kaydet'e bas.`, 'error', 4000);
-                        return;
-                    }
+                if (!eNo || !dNo) {
+                    triggerToast(!eNo ? 'Emanet numarası boş. Yoksa "Yok" seç.' : 'Soruşturma numarası boş. Yoksa "Yok" seç.', 'error');
+                    activeField.value = !eNo ? 'emanet' : 'dosya';
+                    return;
+                }
+                const eYok = eNo.toLowerCase() === 'yok';
+                const dYok = dNo.toLowerCase() === 'yok';
+                const ky = parseInt(form.value.kararYili);
+                let warn = null;
+                if ((!eYok && parseInt(form.value.emanetYil) > ky) || (!dYok && parseInt(form.value.dosyaYil) > ky)) {
+                    warn = `Yıl karar yılından (${ky}) sonra görünüyor. Doğruysa tekrar Kaydet'e bas.`;
+                }
+                if (!eYok && !dYok) {
+                    const dupKeyOf = (x) => `${x.emanetYil}/${(x.emanetNo || '').toString().trim()}|${x.dosyaYil}/${(x.dosyaNo || '').toString().trim()}`;
+                    const dupKey = dupKeyOf(form.value);
+                    const dup = items.value.find(i => dupKeyOf(i) === dupKey);
+                    if (dup) warn = `Bu kayıt zaten var (${dup.kararYili}/${dup.rafGrubu || '1B'}). Yine de eklemek için tekrar Kaydet'e bas.`;
+                }
+                const warnKey = warn ? `${form.value.emanetYil}/${eNo}|${form.value.dosyaYil}/${dNo}|${warn}` : null;
+                if (warn && lastDupKey !== warnKey) {
+                    lastDupKey = warnKey;
+                    triggerToast(warn, 'error', 4000);
+                    return;
                 }
                 lastDupKey = null;
                 const newItem = {
@@ -1244,9 +1381,14 @@
                     materyalTuru: form.value.materyalTuru
                 };
                 items.value.push(newItem);
+                lastAdded.value = newItem;
                 form.value.emanetNo = '';
                 form.value.dosyaNo = '';
-                setTimeout(() => { if (emanetInput.value) emanetInput.value.focus(); }, 50);
+                activeField.value = 'emanet';
+                justSaved.value = true;
+                clearTimeout(justSavedTimer);
+                justSavedTimer = setTimeout(() => { justSaved.value = false; }, 700);
+                if (navigator.vibrate) navigator.vibrate(30);
             };
 
             const deleteItem = (id) => {
@@ -1310,6 +1452,19 @@
                 items,
                 reversedItems,
                 visibleItems,
+                tabs,
+                padKeys,
+                tab,
+                activeField,
+                activeIsYok,
+                useSysKb,
+                lastAdded,
+                justSaved,
+                printGroupKey,
+                groupSummaries,
+                pressKey,
+                switchField,
+                undoLast,
                 groupCount,
                 materyalTurleri,
                 searchText,
