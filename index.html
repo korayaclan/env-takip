@@ -943,12 +943,12 @@
 
             const toast = ref({ show: false, message: '', type: 'info' });
             let toastTimeout = null;
-            const triggerToast = (msg, type = 'info') => {
+            const triggerToast = (msg, type = 'info', ms = 2200) => {
                 toast.value.message = msg;
                 toast.value.type = type;
                 toast.value.show = true;
                 if (toastTimeout) clearTimeout(toastTimeout);
-                toastTimeout = setTimeout(() => { toast.value.show = false; }, 2200);
+                toastTimeout = setTimeout(() => { toast.value.show = false; }, ms);
             };
 
             const reversedItems = computed(() => [...items.value].reverse());
@@ -1182,6 +1182,18 @@
             }, { deep: true });
 
             const addItem = () => {
+                const eNo = (form.value.emanetNo || '').toString().trim();
+                const dNo = (form.value.dosyaNo || '').toString().trim();
+                if (eNo.toLowerCase() !== 'yok' && dNo.toLowerCase() !== 'yok') {
+                    const dupKey = `${form.value.emanetYil}/${eNo}|${form.value.dosyaYil}/${dNo}`;
+                    const dup = items.value.find(i => `${i.emanetYil}/${(i.emanetNo || '').toString().trim()}|${i.dosyaYil}/${(i.dosyaNo || '').toString().trim()}` === dupKey);
+                    if (dup && lastDupKey !== dupKey) {
+                        lastDupKey = dupKey;
+                        triggerToast(`Bu kayıt zaten var (${dup.kararYili}/${dup.rafGrubu || '1B'}). Yine de eklemek için tekrar Kaydet'e bas.`, 'error', 4000);
+                        return;
+                    }
+                }
+                lastDupKey = null;
                 const newItem = {
                     id: Date.now().toString() + Math.random().toString(36).substring(2, 8),
                     kararYili: form.value.kararYili,
