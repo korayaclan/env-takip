@@ -759,17 +759,41 @@
         </form>
     </div>
 
+    <!-- LİSTE ARAMA / FİLTRE -->
+    <div class="px-3 pt-2 pb-1 shrink-0 no-print flex gap-2 items-center">
+        <div :class="isDark ? 'bg-[#1e293b] border-slate-700' : 'bg-white border-slate-300'" class="flex-1 flex items-center border rounded-xl px-3 min-h-[44px] focus-within:ring-2 focus-within:ring-blue-500">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 text-sm mr-2"></i>
+            <input
+                type="search"
+                inputmode="numeric"
+                v-model="searchText"
+                placeholder="Numara ara"
+                :class="isDark ? 'text-slate-100 placeholder-slate-500' : 'text-slate-900 placeholder-slate-400'"
+                class="flex-1 bg-transparent outline-none text-base font-mono min-w-0">
+            <button v-if="searchText" type="button" @click="searchText = ''" class="text-slate-400 p-1">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <button
+            type="button"
+            @click="onlyActiveGroup = !onlyActiveGroup"
+            :class="onlyActiveGroup ? 'bg-indigo-600 text-white' : isDark ? 'bg-slate-700 text-slate-200' : 'bg-slate-200 text-slate-700'"
+            class="min-h-[44px] px-3 rounded-xl text-sm font-bold shrink-0">
+            {{ onlyActiveGroup ? 'Bu grup' : 'Tümü' }}
+        </button>
+    </div>
+
     <!-- LİSTE -->
     <main class="flex-1 overflow-y-auto px-3 py-1 space-y-2 custom-scroll no-print">
         <div
-            v-if="reversedItems.length === 0"
+            v-if="visibleItems.length === 0"
             :class="isDark ? 'bg-[#1e293b] border-slate-800 text-slate-500' : 'bg-white border-slate-200 text-slate-400'"
             class="p-6 rounded-xl text-center border text-sm transition-colors">
-            Henüz kayıt eklenmedi.
+            {{ items.length === 0 ? 'Henüz kayıt eklenmedi.' : 'Eşleşen kayıt yok.' }}
         </div>
 
         <div
-            v-for="item in reversedItems"
+            v-for="item in visibleItems"
             :key="item.id"
             :class="isDark ? 'bg-[#1e293b] border-slate-700/80 shadow-slate-950/30' : 'bg-white border-slate-200'"
             class="rounded-xl border flex items-stretch shadow-sm transition-colors">
@@ -930,6 +954,8 @@
             const ROWS_PER_PAGE = 35;
             const materyalTurleri = ['Seçim Yok', 'Zarf', 'Poşet', 'Kutu', 'Çek/Senet', 'Abonelik Aslı', 'Eşya', 'Elektronik Eşya', 'Dijital Materyal', 'Swap', 'Bilinmiyor'];
             const items = ref([]);
+            const searchText = ref('');
+            const onlyActiveGroup = ref(true);
             const editForm = ref(null);
             const pendingDeleteId = ref(null);
             let pendingDeleteTimer = null;
@@ -952,6 +978,18 @@
             };
 
             const reversedItems = computed(() => [...items.value].reverse());
+
+            const visibleItems = computed(() => {
+                const q = searchText.value.trim().toLowerCase();
+                return reversedItems.value.filter(i => {
+                    if (onlyActiveGroup.value && !q) {
+                        if (i.kararYili !== form.value.kararYili || (i.rafGrubu || '1B') !== form.value.rafGrubu) return false;
+                    }
+                    if (!q) return true;
+                    const hay = [i.emanetYil, i.emanetNo, i.dosyaYil, i.dosyaNo, `${i.emanetYil}/${i.emanetNo}`, `${i.dosyaYil}/${i.dosyaNo}`, i.materyalTuru].join(' ').toLowerCase();
+                    return hay.includes(q);
+                });
+            });
 
             const groupCount = computed(() =>
                 items.value.filter(i => i.kararYili === form.value.kararYili && (i.rafGrubu || '1B') === form.value.rafGrubu).length
@@ -1270,6 +1308,9 @@
                 rafGruplari,
                 items,
                 reversedItems,
+                visibleItems,
+                searchText,
+                onlyActiveGroup,
                 materyalTurleri,
                 editForm,
                 pendingDeleteId,
