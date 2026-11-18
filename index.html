@@ -745,7 +745,7 @@
                 <div v-show="showType" class="flex flex-wrap gap-1.5 mt-2">
                     <button
                         type="button"
-                        v-for="t in ['Seçim Yok', 'Zarf', 'Poşet', 'Kutu', 'Çek/Senet', 'Abonelik Aslı', 'Eşya', 'Elektronik Eşya', 'Dijital Materyal', 'Swap', 'Bilinmiyor']"
+                        v-for="t in materyalTurleri"
                         :key="'tag-'+t"
                         @click="form.materyalTuru=t; showType=false"
                         :class="form.materyalTuru === t
@@ -760,11 +760,11 @@
     </div>
 
     <!-- LİSTE -->
-    <main class="flex-1 overflow-y-auto px-3 py-2 space-y-1.5 custom-scroll no-print">
+    <main class="flex-1 overflow-y-auto px-3 py-1 space-y-2 custom-scroll no-print">
         <div
             v-if="reversedItems.length === 0"
             :class="isDark ? 'bg-[#1e293b] border-slate-800 text-slate-500' : 'bg-white border-slate-200 text-slate-400'"
-            class="p-6 rounded-xl text-center border text-xs transition-colors">
+            class="p-6 rounded-xl text-center border text-sm transition-colors">
             Henüz kayıt eklenmedi.
         </div>
 
@@ -772,34 +772,102 @@
             v-for="item in reversedItems"
             :key="item.id"
             :class="isDark ? 'bg-[#1e293b] border-slate-700/80 shadow-slate-950/30' : 'bg-white border-slate-200'"
-            class="p-2.5 rounded-xl border flex justify-between items-center shadow-sm transition-colors">
+            class="rounded-xl border flex items-stretch shadow-sm transition-colors">
 
-            <div>
-                <div class="flex items-center gap-1 mb-0.5">
+            <button type="button" @click="openEdit(item)" class="flex-1 min-w-0 p-3 text-left">
+                <div class="flex items-center gap-2 mb-0.5">
                     <span
                         :class="isDark ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800/60' : 'bg-indigo-50 text-indigo-700'"
-                        class="font-bold px-1.5 py-0.5 rounded text-[10px] font-mono">
-                        Grup: {{ item.kararYili }}/{{ getRafGrubu(item) }}
+                        class="font-bold px-1.5 py-0.5 rounded text-xs font-mono">
+                        {{ item.kararYili }}/{{ getRafGrubu(item) }}
                     </span>
-                    <span :class="isDark ? 'text-slate-100' : 'text-slate-900'" class="font-bold text-xs font-mono">
+                    <span :class="isDark ? 'text-slate-100' : 'text-slate-900'" class="font-bold text-base font-mono truncate">
                         {{ getEmanetDisplay(item) }}
                     </span>
                 </div>
-                <p :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="text-[11px] font-mono">
+                <p :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="text-sm font-mono">
                     {{ getDosyaDisplay(item) }}
                     <span v-if="item.materyalTuru !== 'Seçim Yok'">({{ item.materyalTuru }})</span>
                 </p>
-            </div>
+            </button>
 
             <button
                 type="button"
-                @click="deleteItem(item.id)"
-                :class="isDark ? 'text-slate-500 hover:text-rose-400' : 'text-slate-300 hover:text-rose-500'"
-                class="p-2 text-xs transition-colors">
-                <i class="fa-solid fa-trash-can"></i>
+                @click="askDelete(item.id)"
+                :class="pendingDeleteId === item.id
+                    ? 'bg-rose-600 text-white text-xs font-bold'
+                    : isDark ? 'text-slate-500 text-base' : 'text-slate-400 text-base'"
+                class="w-16 shrink-0 rounded-r-xl transition-colors">
+                <template v-if="pendingDeleteId === item.id">Sil?<br>Evet</template>
+                <i v-else class="fa-solid fa-trash-can"></i>
             </button>
         </div>
     </main>
+
+    <!-- KAYIT DÜZENLEME MODALI -->
+    <div
+        v-if="editForm"
+        class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm no-print"
+        @click.self="editForm = null">
+        <div
+            :class="isDark ? 'bg-[#1e293b] border-slate-700 text-slate-100' : 'bg-white border-slate-200 text-slate-800'"
+            class="w-full max-w-md rounded-t-2xl p-4 shadow-2xl border space-y-3 max-h-[92dvh] overflow-y-auto">
+
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-sm uppercase tracking-wider text-blue-500">Kaydı Düzenle</h3>
+                <button type="button" @click="editForm = null" class="w-11 h-11 text-slate-400 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <label class="text-xs font-bold uppercase tracking-wider opacity-70">Karar Yılı
+                    <select v-model="editForm.kararYili" :class="isDark ? 'bg-[#0f172a] border-slate-700' : 'bg-white border-slate-300'" class="mt-1 w-full border rounded-xl p-3 text-base font-mono normal-case">
+                        <option v-for="y in targetYears" :key="'e-'+y" :value="y">{{ y }}</option>
+                    </select>
+                </label>
+                <label class="text-xs font-bold uppercase tracking-wider opacity-70">Raf / Grup
+                    <select v-model="editForm.rafGrubu" :class="isDark ? 'bg-[#0f172a] border-slate-700' : 'bg-white border-slate-300'" class="mt-1 w-full border rounded-xl p-3 text-base font-mono normal-case">
+                        <option v-for="r in rafGruplari" :key="'er-'+r" :value="r">{{ r }}</option>
+                    </select>
+                </label>
+            </div>
+
+            <div>
+                <div class="text-xs font-bold uppercase tracking-wider opacity-70 mb-1">Emanet No</div>
+                <div :class="isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white'" class="flex border rounded-xl overflow-hidden">
+                    <input type="text" inputmode="numeric" v-model="editForm.emanetYil" :class="isDark ? 'bg-[#0f172a] border-slate-700' : 'bg-slate-50 border-slate-200'" class="w-20 p-3 text-center font-bold text-base border-r outline-none">
+                    <input type="text" inputmode="numeric" v-model="editForm.emanetNo" :class="isDark ? 'bg-[#0f172a]' : 'bg-white'" class="flex-1 p-3 text-lg font-mono outline-none min-w-0">
+                    <button type="button" @click="editForm.emanetNo = 'Yok'" :class="isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-600'" class="px-4 text-sm font-bold border-l">Yok</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="text-xs font-bold uppercase tracking-wider opacity-70 mb-1">Soruşturma / Esas No</div>
+                <div :class="isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white'" class="flex border rounded-xl overflow-hidden">
+                    <input type="text" inputmode="numeric" v-model="editForm.dosyaYil" :class="isDark ? 'bg-[#0f172a] border-slate-700' : 'bg-slate-50 border-slate-200'" class="w-20 p-3 text-center font-bold text-base border-r outline-none">
+                    <input type="text" inputmode="numeric" v-model="editForm.dosyaNo" :class="isDark ? 'bg-[#0f172a]' : 'bg-white'" class="flex-1 p-3 text-lg font-mono outline-none min-w-0">
+                    <button type="button" @click="editForm.dosyaNo = 'Yok'" :class="isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-600'" class="px-4 text-sm font-bold border-l">Yok</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="text-xs font-bold uppercase tracking-wider opacity-70 mb-1">Emanet Türü</div>
+                <div class="flex flex-wrap gap-1.5">
+                    <button
+                        type="button"
+                        v-for="t in materyalTurleri"
+                        :key="'et-'+t"
+                        @click="editForm.materyalTuru = t"
+                        :class="editForm.materyalTuru === t ? 'bg-blue-600 text-white font-bold' : isDark ? 'bg-[#0f172a] text-slate-300 border border-slate-700' : 'bg-slate-100 text-slate-700 border border-slate-200'"
+                        class="px-3 min-h-[40px] rounded-lg text-sm">{{ t }}</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button type="button" @click="editForm = null" :class="isDark ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-800'" class="py-3.5 rounded-xl text-base font-semibold">Vazgeç</button>
+                <button type="button" @click="saveEdit" class="py-3.5 rounded-xl text-base font-bold bg-emerald-600 text-white shadow-md shadow-emerald-600/20">Kaydet</button>
+            </div>
+        </div>
+    </div>
 
     <!-- YAZDIRMA ŞABLONU -->
     <div v-for="page in printPages" :key="page.key" class="print-only print-page">
@@ -860,7 +928,11 @@
             const targetYears = ['2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'];
             const rafGruplari = ['1B', '10B', '20B', '30B', '40B', '50B', '60B', '70B', '80B'];
             const ROWS_PER_PAGE = 35;
+            const materyalTurleri = ['Seçim Yok', 'Zarf', 'Poşet', 'Kutu', 'Çek/Senet', 'Abonelik Aslı', 'Eşya', 'Elektronik Eşya', 'Dijital Materyal', 'Swap', 'Bilinmiyor'];
             const items = ref([]);
+            const editForm = ref(null);
+            const pendingDeleteId = ref(null);
+            let pendingDeleteTimer = null;
             const isDark = ref(false);
             const showSettingsModal = ref(false);
             const showResetModal = ref(false);
@@ -1131,6 +1203,36 @@
                 triggerToast('Kayıt silindi.', 'info');
             };
 
+            const askDelete = (id) => {
+                if (pendingDeleteId.value === id) {
+                    clearTimeout(pendingDeleteTimer);
+                    pendingDeleteId.value = null;
+                    deleteItem(id);
+                    return;
+                }
+                pendingDeleteId.value = id;
+                clearTimeout(pendingDeleteTimer);
+                pendingDeleteTimer = setTimeout(() => { pendingDeleteId.value = null; }, 3000);
+            };
+
+            const openEdit = (item) => {
+                pendingDeleteId.value = null;
+                editForm.value = { ...item, rafGrubu: item.rafGrubu || '1B' };
+            };
+
+            const saveEdit = () => {
+                const f = editForm.value;
+                if (!f) return;
+                if (!String(f.emanetNo).trim() || !String(f.dosyaNo).trim()) {
+                    triggerToast('Numara boş olamaz. Yoksa "Yok" yaz.', 'error');
+                    return;
+                }
+                const idx = items.value.findIndex(i => i.id === f.id);
+                if (idx !== -1) items.value[idx] = { ...f };
+                editForm.value = null;
+                triggerToast('Kayıt güncellendi.', 'success');
+            };
+
             const exportExcel = () => {
                 if (items.value.length === 0) {
                     triggerToast('Kayıt bulunmuyor.', 'info');
@@ -1156,6 +1258,12 @@
                 rafGruplari,
                 items,
                 reversedItems,
+                materyalTurleri,
+                editForm,
+                pendingDeleteId,
+                askDelete,
+                openEdit,
+                saveEdit,
                 groupCount,
                 printPages,
                 showYear,
