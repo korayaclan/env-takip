@@ -548,15 +548,23 @@
             <button
                 type="button"
                 @click="showYear = !showYear"
-                class="w-full flex justify-between items-center text-xs font-bold"
-                :class="isDark ? 'text-indigo-300' : 'text-indigo-900'">
-                <span>
-                    Karar / Grup:
-                    <strong class="font-mono text-sm ml-1" :class="isDark ? 'text-indigo-400' : 'text-indigo-600'">
+                class="w-full flex justify-between items-center min-h-[48px]">
+                <span class="flex flex-col items-start leading-tight">
+                    <span :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="text-xs font-bold uppercase tracking-wider">Aktif Grup</span>
+                    <strong class="font-mono text-2xl" :class="isDark ? 'text-indigo-300' : 'text-indigo-700'">
                         {{ form.kararYili }}/{{ form.rafGrubu }}
                     </strong>
                 </span>
-                <i :class="showYear ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-slate-400 text-xs"></i>
+                <span class="flex items-center gap-2.5">
+                    <span class="text-right leading-tight">
+                        <span class="block text-2xl font-bold font-mono" :class="isDark ? 'text-emerald-400' : 'text-emerald-600'">{{ groupCount }}</span>
+                        <span :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="block text-xs font-semibold">kayıt</span>
+                    </span>
+                    <span class="px-3 py-2 rounded-lg text-sm font-bold bg-indigo-600 text-white flex items-center gap-1.5">
+                        {{ showYear ? 'Kapat' : 'Değiştir' }}
+                        <i :class="showYear ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-xs"></i>
+                    </span>
+                </span>
             </button>
 
             <div v-show="showYear" :class="isDark ? 'border-slate-700' : 'border-slate-100'" class="grid grid-cols-4 gap-1.5 mt-2.5 pt-2.5 border-t">
@@ -873,6 +881,10 @@
 
             const reversedItems = computed(() => [...items.value].reverse());
 
+            const groupCount = computed(() =>
+                items.value.filter(i => i.kararYili === form.value.kararYili && (i.rafGrubu || '1B') === form.value.rafGrubu).length
+            );
+
             const printPages = computed(() => {
                 const groups = new Map();
                 items.value.forEach((item) => {
@@ -1144,6 +1156,7 @@
                 rafGruplari,
                 items,
                 reversedItems,
+                groupCount,
                 printPages,
                 showYear,
                 showType,
