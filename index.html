@@ -807,22 +807,22 @@
         </div>
 
         <div class="space-y-2">
-            <button type="button" @click="openPrintModal(null)" class="w-full min-h-[52px] rounded-xl bg-slate-700 text-white text-base font-bold flex items-center justify-center gap-2">
+            <button type="button" @click="openPrintModal(null)" class="tt-btn-outline w-full min-h-[52px] text-base font-bold flex items-center justify-center gap-2">
                 <i class="fa-solid fa-print"></i> Tüm grupları yazdır
             </button>
-            <button type="button" @click="exportExcel" class="w-full min-h-[52px] rounded-xl bg-emerald-600 text-white text-base font-bold flex items-center justify-center gap-2">
+            <button type="button" @click="exportExcel" class="tt-btn-outline w-full min-h-[52px] text-base font-bold flex items-center justify-center gap-2">
                 <i class="fa-solid fa-file-excel"></i> Excel'e aktar
             </button>
             <div class="grid grid-cols-2 gap-2">
-                <button type="button" @click="exportJSON" :class="isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-white border-slate-300 text-slate-700'" class="min-h-[52px] rounded-xl border text-sm font-semibold flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-file-export text-emerald-500"></i> JSON yedek
+                <button type="button" @click="exportJSON" class="tt-btn-quiet min-h-[52px] text-sm font-semibold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-export"></i> JSON yedek
                 </button>
-                <label :class="isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-white border-slate-300 text-slate-700'" class="min-h-[52px] rounded-xl border text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-file-import text-blue-500"></i> Yedek yükle
+                <label class="tt-btn-quiet min-h-[52px] text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-file-import"></i> Yedek yükle
                     <input type="file" accept=".json" @change="importJSON" class="hidden">
                 </label>
             </div>
-            <button type="button" @click="promptReset" class="w-full min-h-[52px] rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-500 text-sm font-semibold flex items-center justify-center gap-2">
+            <button type="button" @click="promptReset" class="tt-btn-undo w-full min-h-[52px] text-sm flex items-center justify-center gap-2">
                 <i class="fa-solid fa-triangle-exclamation"></i> Verileri sıfırla
             </button>
         </div>
@@ -928,8 +928,8 @@
             </div>
 
             <div class="grid grid-cols-2 gap-2 pt-1">
-                <button type="button" @click="editForm = null" :class="isDark ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-800'" class="py-3.5 rounded-xl text-base font-semibold">Vazgeç</button>
-                <button type="button" @click="saveEdit" class="py-3.5 rounded-xl text-base font-bold bg-emerald-600 text-white shadow-md shadow-emerald-600/20">Kaydet</button>
+                <button type="button" @click="editForm = null" class="tt-btn-outline min-h-[50px] text-base font-bold">Vazgeç</button>
+                <button type="button" @click="saveEdit" class="tt-save">Kaydet</button>
             </div>
         </div>
     </div>
