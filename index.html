@@ -13,8 +13,17 @@
     <meta name="apple-mobile-web-app-title" content="Envanter">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&display=swap">
+
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: {
+            indigo: { 300: '#9DB0D8', 500: '#17274A', 600: '#17274A', 700: '#17274A', 950: '#0E1527' },
+            blue: { 500: '#3E63A8', 600: '#17274A', 700: '#101C36' }
+        } } } };
+    </script>
 
     <!-- Vue -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -44,7 +53,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            background: #0f172a;
+            background: #F2F4F7;
         }
 
         button,
@@ -55,6 +64,52 @@
         .print-only {
             display: none;
         }
+
+
+        /* =========================================================
+           TEMA: TUTANAK (lacivert + mühür kırmızısı)
+           ========================================================= */
+        :root {
+            --ground: #F2F4F7; --surface: #FFFFFF; --surface2: #FBFCFD; --ink: #17274A; --onink: #FFFFFF;
+            --sub: #55627A; --rule: #C4CBD6; --tint: #E9EDF4; --seal: #9E2A2B; --head: #17274A;
+        }
+        body.dark {
+            --ground: #0E1527; --surface: #18233E; --surface2: #142039; --ink: #E4EAF6; --onink: #0E1527;
+            --sub: #9AA8C6; --rule: #33415F; --tint: #223152; --seal: #C14446; --head: #0A1020;
+        }
+        body, #app { font-family: 'Libre Franklin', 'Helvetica Neue', Arial, sans-serif; }
+        body { background: var(--ground) !important; }
+        #app { background: var(--ground); color: var(--ink); }
+        .tt-num { font-variant-numeric: tabular-nums; }
+        .tt-ink { color: var(--ink); }
+        .tt-sub { color: var(--sub); }
+        .tt-head { background: var(--head); color: #fff; }
+        .tt-ver { font: 600 12px 'Libre Franklin', sans-serif; border: 1px solid #8FA0C4; color: #C9D3EA; padding: 0 6px; border-radius: 3px; }
+        .tt-card { background: var(--surface); border: 1.5px solid var(--rule); border-radius: 4px; }
+        .tt-group { background: var(--surface); border: 1.5px solid var(--ink); border-top: 4px solid var(--seal); border-radius: 4px; }
+        .tt-rule-top { border-top: 1.5px solid var(--rule); }
+        .tt-btn-outline { border: 1.5px solid var(--ink); border-radius: 4px; background: var(--surface); color: var(--ink); }
+        .tt-btn-quiet { border: 1.5px solid var(--rule); border-radius: 4px; background: var(--surface); color: var(--ink); }
+        .tt-btn-undo { border: 1.5px solid var(--seal); border-radius: 4px; background: var(--surface); color: var(--seal); font-weight: 700; }
+        .tt-chip { min-height: 34px; padding: 0 8px; border-radius: 4px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; background: var(--surface); color: var(--sub); border: 1.5px solid var(--rule); }
+        .tt-chip.on { background: var(--ink); color: var(--onink); border-color: var(--ink); }
+        .tt-chip-lg { min-height: 44px; font-size: 16px; }
+        .tt-field { display: flex; align-items: stretch; height: 48px; background: var(--surface2); border: 1.5px solid var(--ink); border-radius: 4px; overflow: hidden; }
+        .tt-field.active { border-width: 3px; background: var(--surface); }
+        .tt-yr { width: 64px; text-align: center; background: var(--tint); color: var(--ink); border: 0; border-right: 1.5px solid var(--ink); font-size: 17px; font-weight: 600; outline: none; }
+        .tt-no { flex: 1; min-width: 0; padding-left: 12px; background: transparent; color: var(--ink); border: 0; font-size: 26px; font-weight: 600; outline: none; caret-color: var(--ink); }
+        .tt-no::placeholder { color: var(--sub); font-weight: 400; font-size: 22px; }
+        .tt-key { min-height: 44px; border: 1.5px solid var(--ink); border-radius: 4px; background: var(--surface); color: var(--ink); font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; display: flex; align-items: center; justify-content: center; }
+        .tt-key.alt { background: var(--tint); font-size: 18px; font-weight: 700; }
+        .tt-key.alt-on { background: #D69A1C; color: #17274A; border-color: #17274A; }
+        .tt-key:active, .tt-btn-outline:active, .tt-save:active { transform: scale(0.97); }
+        .tt-save { min-height: 50px; border: 0; border-radius: 6px; background: var(--seal); color: #fff; font-size: 21px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; outline: 1.5px solid rgba(255,255,255,0.7); outline-offset: -5px; transition: background .15s; }
+        .tt-save.done { background: #2E6B4F; }
+        .tt-nav { background: var(--surface); border-top: 1.5px solid var(--ink); }
+        .tt-tab { min-height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 13px; font-weight: 500; color: var(--sub); position: relative; background: transparent; border: 0; }
+        .tt-tab.on { color: var(--ink); font-weight: 700; }
+        .tt-tab-mark { position: absolute; top: 0; left: 28%; right: 28%; height: 3px; background: var(--seal); }
+        .tt-badge { position: absolute; top: -6px; left: 14px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--ink); color: var(--onink); font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; padding: 0 3px; }
 
         /* Özel Kaydırma Çubuğu */
         .custom-scroll::-webkit-scrollbar {
@@ -280,21 +335,17 @@
     </transition>
 
     <!-- HEADER -->
-    <header
-        class="bg-[#0f172a] text-white px-3 py-2.5 sticky top-0 z-50 shadow-md no-print flex justify-between items-center shrink-0 border-b border-slate-800">
-        <div>
-            <div class="flex items-center gap-1.5">
-                <h1 class="font-bold text-base leading-tight whitespace-nowrap">Envanter Takip</h1>
-                <span class="bg-amber-500 text-xs font-bold px-1.5 py-0.5 rounded text-white shadow-sm">v3</span>
-            </div>
-            <p class="text-[11px] text-slate-400 whitespace-nowrap">Saha Kayıt Modülü</p>
+    <header class="tt-head sticky top-0 z-50 shadow-md no-print flex justify-between items-center shrink-0 pl-3.5 pr-2 h-[52px]">
+        <div class="flex items-center gap-2">
+            <h1 class="font-bold text-lg whitespace-nowrap">Envanter Takip</h1>
+            <span class="tt-ver">v3</span>
         </div>
         <button
             type="button"
             @click="toggleDarkMode"
             title="Gece / Gündüz"
-            class="w-11 h-11 rounded-lg flex items-center justify-center text-base shadow bg-slate-800 active:scale-95 text-slate-200 border border-slate-700">
-            <i :class="isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon'"></i>
+            class="w-11 h-11 flex items-center justify-center text-base text-slate-200 active:scale-95">
+            <i :class="isDark ? 'fa-solid fa-sun text-amber-300' : 'fa-solid fa-moon'"></i>
         </button>
     </header>
 
@@ -516,59 +567,33 @@
 
     <!-- ============ SEKME: KAYIT ============ -->
     <div v-show="tab === 'kayit'" class="flex-1 min-h-0 overflow-y-auto p-2 flex flex-col gap-2 custom-scroll no-print">
-        <div
-            :class="isDark ? 'bg-[#1e293b] border-slate-700 shadow-slate-950/50' : 'bg-white border-slate-200'"
-            class="rounded-xl shadow-sm border px-2.5 py-1.5 transition-colors shrink-0">
-
-            <button
-                type="button"
-                @click="showYear = !showYear"
-                class="w-full flex justify-between items-center min-h-[40px]">
-                <span class="flex flex-col items-start leading-tight">
-                    <span :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="text-xs font-bold uppercase tracking-wider">Aktif Grup</span>
-                    <strong class="font-mono text-xl" :class="isDark ? 'text-indigo-300' : 'text-indigo-700'">
-                        {{ form.kararYili }}/{{ form.rafGrubu }}
-                    </strong>
+        <section class="tt-group shrink-0 px-3 py-1.5">
+            <button type="button" @click="showYear = !showYear" class="w-full flex items-center justify-between min-h-[48px] text-left">
+                <span class="flex flex-col leading-tight">
+                    <span class="tt-sub text-xs font-semibold">Karar yılı / raf</span>
+                    <strong class="tt-num tt-ink text-[26px] font-bold leading-[1.15]">{{ form.kararYili }} / {{ form.rafGrubu }}</strong>
                 </span>
-                <span class="flex items-center gap-2.5">
-                    <span class="text-right leading-tight">
-                        <span class="block text-xl font-bold font-mono leading-none" :class="isDark ? 'text-emerald-400' : 'text-emerald-600'">{{ groupCount }}</span>
-                        <span :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="block text-xs font-semibold">kayıt</span>
-                    </span>
-                    <span class="px-3 py-1.5 rounded-lg text-sm font-bold bg-indigo-600 text-white flex items-center gap-1.5">
+                <span class="flex items-center gap-3">
+                    <span class="tt-ink text-[15px] font-semibold">{{ groupCount }} kayıt</span>
+                    <span class="tt-btn-outline min-h-[44px] px-3 inline-flex items-center gap-1 text-sm font-bold">
                         {{ showYear ? 'Kapat' : 'Değiştir' }}
                         <i :class="showYear ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-xs"></i>
                     </span>
                 </span>
             </button>
-
-            <div v-show="showYear" :class="isDark ? 'border-slate-700' : 'border-slate-100'" class="grid grid-cols-4 gap-1.5 mt-2.5 pt-2.5 border-t">
-                <button
-                    v-for="y in targetYears"
-                    :key="'grp-'+y"
-                    type="button"
-                    @mousedown.prevent
-                    @click="setKararYili(y)"
-                    :class="form.kararYili === y
-                        ? 'bg-indigo-600 text-white font-bold shadow-md shadow-indigo-600/30'
-                        : isDark
-                            ? 'bg-[#0f172a] text-slate-300 border-slate-700 hover:bg-slate-800 border'
-                            : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'"
-                    class="min-h-[44px] text-base rounded-lg font-mono transition">
-                    {{ y }}
-                </button>
-            </div>
-
-            <div v-show="showYear" :class="isDark ? 'border-slate-700' : 'border-slate-100'" class="mt-2 pt-2 border-t">
-                <div class="flex justify-between items-center mb-1.5">
-                    <span :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="text-xs font-bold uppercase tracking-wider">
-                        Raf / Grup Bölümü
-                    </span>
-                    <span class="text-sm font-mono font-bold text-blue-600">
-                        {{ form.kararYili }}/{{ form.rafGrubu }}
-                    </span>
+            <div v-show="showYear" class="tt-rule-top mt-1 pt-2 pb-1">
+                <div class="grid grid-cols-4 gap-1.5">
+                    <button
+                        v-for="y in targetYears"
+                        :key="'grp-'+y"
+                        type="button"
+                        @mousedown.prevent
+                        @click="setKararYili(y)"
+                        :class="['tt-chip tt-chip-lg', form.kararYili === y ? 'on' : '']">
+                        {{ y }}
+                    </button>
                 </div>
-
+                <p class="tt-sub text-xs font-semibold mt-2 mb-1">Raf grubu</p>
                 <div class="grid grid-cols-5 gap-1.5">
                     <button
                         v-for="raf in rafGruplari"
@@ -576,25 +601,17 @@
                         type="button"
                         @mousedown.prevent
                         @click="setRafGrubu(raf)"
-                        :class="form.rafGrubu === raf
-                            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-600/20'
-                            : isDark
-                                ? 'bg-[#0f172a] text-slate-300 border border-slate-700 hover:bg-slate-800'
-                                : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'"
-                        class="min-h-[44px] text-sm rounded-lg font-mono transition">
+                        :class="['tt-chip tt-chip-lg', form.rafGrubu === raf ? 'on' : '']">
                         {{ raf }}
                     </button>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div
-            :class="isDark ? 'bg-[#1e293b] border-slate-700 shadow-slate-950/50' : 'bg-white border-slate-200'"
-            class="p-2 rounded-xl shadow-sm border space-y-1.5 transition-colors shrink-0">
-
-            <div class="space-y-0.5">
+        <section class="tt-card shrink-0 p-2 flex flex-col gap-2">
+            <div class="flex flex-col gap-1">
                 <div class="flex justify-between items-center">
-                    <label :class="isDark ? 'text-slate-400' : 'text-slate-600'" class="text-xs font-bold uppercase tracking-wider">Emanet No</label>
+                    <span class="tt-ink text-sm font-bold">Emanet no</span>
                     <div class="flex gap-1.5">
                         <button
                             type="button"
@@ -602,23 +619,13 @@
                             :key="'emanety-'+yOff"
                             @mousedown.prevent
                             @click="setEmanetYil((parseInt(form.kararYili || 2013) - yOff).toString())"
-                            :class="form.emanetYil === (parseInt(form.kararYili || 2013) - yOff).toString()
-                                ? 'bg-blue-600 text-white font-bold shadow-sm'
-                                : isDark
-                                    ? 'bg-[#0f172a] text-slate-400 border border-slate-700'
-                                    : 'bg-slate-100 text-slate-600'"
-                            class="px-2 min-h-[30px] text-xs rounded-lg font-mono transition">
+                            :class="['tt-chip', form.emanetYil === (parseInt(form.kararYili || 2013) - yOff).toString() ? 'on' : '']">
                             {{ parseInt(form.kararYili || 2013) - yOff }}
                         </button>
                     </div>
                 </div>
-                <div :class="[isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white', activeField === 'emanet' ? 'ring-2 ring-blue-500 border-blue-500' : '']" class="flex border rounded-xl overflow-hidden items-center">
-                    <input
-                        type="text"
-                        inputmode="numeric"
-                        v-model="form.emanetYil"
-                        :class="isDark ? 'bg-[#0f172a] text-slate-200 border-slate-700' : 'bg-slate-50 text-slate-900 border-slate-200'"
-                        class="w-16 py-2 text-center font-bold text-sm border-r outline-none">
+                <div :class="['tt-field', activeField === 'emanet' ? 'active' : '']">
+                    <input type="text" inputmode="numeric" v-model="form.emanetYil" class="tt-yr tt-num">
                     <input
                         type="text"
                         :inputmode="useSysKb ? 'numeric' : 'none'"
@@ -628,14 +635,13 @@
                         @click="activeField = 'emanet'"
                         placeholder="Numara"
                         ref="emanetInput"
-                        :class="isDark ? 'bg-[#0f172a] text-slate-100 placeholder-slate-500' : 'bg-white text-slate-900 placeholder-slate-400'"
-                        class="flex-1 py-2 px-3 text-xl font-mono font-bold outline-none min-w-0">
+                        class="tt-no tt-num">
                 </div>
             </div>
 
-            <div class="space-y-0.5">
+            <div class="flex flex-col gap-1">
                 <div class="flex justify-between items-center">
-                    <label :class="isDark ? 'text-slate-400' : 'text-slate-600'" class="text-xs font-bold uppercase tracking-wider">Soruşturma / Esas No</label>
+                    <span class="tt-ink text-sm font-bold">Soruşturma / esas no</span>
                     <div class="flex gap-1.5">
                         <button
                             type="button"
@@ -643,23 +649,13 @@
                             :key="'dosyay-'+yOff"
                             @mousedown.prevent
                             @click="setDosyaYil((parseInt(form.kararYili || 2013) - yOff).toString())"
-                            :class="form.dosyaYil === (parseInt(form.kararYili || 2013) - yOff).toString()
-                                ? 'bg-blue-600 text-white font-bold shadow-sm'
-                                : isDark
-                                    ? 'bg-[#0f172a] text-slate-400 border border-slate-700'
-                                    : 'bg-slate-100 text-slate-600'"
-                            class="px-2 min-h-[30px] text-xs rounded-lg font-mono transition">
+                            :class="['tt-chip', form.dosyaYil === (parseInt(form.kararYili || 2013) - yOff).toString() ? 'on' : '']">
                             {{ parseInt(form.kararYili || 2013) - yOff }}
                         </button>
                     </div>
                 </div>
-                <div :class="[isDark ? 'border-slate-700 bg-[#0f172a]' : 'border-slate-300 bg-white', activeField === 'dosya' ? 'ring-2 ring-blue-500 border-blue-500' : '']" class="flex border rounded-xl overflow-hidden items-center">
-                    <input
-                        type="text"
-                        inputmode="numeric"
-                        v-model="form.dosyaYil"
-                        :class="isDark ? 'bg-[#0f172a] text-slate-200 border-slate-700' : 'bg-slate-50 text-slate-900 border-slate-200'"
-                        class="w-16 py-2 text-center font-bold text-sm border-r outline-none">
+                <div :class="['tt-field', activeField === 'dosya' ? 'active' : '']">
+                    <input type="text" inputmode="numeric" v-model="form.dosyaYil" class="tt-yr tt-num">
                     <input
                         type="text"
                         :inputmode="useSysKb ? 'numeric' : 'none'"
@@ -669,37 +665,32 @@
                         @click="activeField = 'dosya'"
                         placeholder="Numara"
                         ref="dosyaInput"
-                        :class="isDark ? 'bg-[#0f172a] text-slate-100 placeholder-slate-500' : 'bg-white text-slate-900 placeholder-slate-400'"
-                        class="flex-1 py-2 px-3 text-xl font-mono font-bold outline-none min-w-0">
+                        class="tt-no tt-num">
                 </div>
             </div>
-        </div>
 
-        <!-- NUMARA TUŞ TAKIMI -->
+        </section>
+
         <div class="flex-1 min-h-[212px] flex flex-col gap-1.5">
             <div class="flex items-center justify-between min-h-[36px] gap-2 shrink-0">
-                <button type="button" @click="showType = true"
-                    :class="isDark ? 'bg-slate-800 text-slate-200 border-slate-700' : 'bg-white text-slate-700 border-slate-300'"
-                    class="min-h-[36px] px-2.5 rounded-lg text-xs font-semibold border flex items-center gap-1 shrink-0 max-w-[45%]">
-                    <span class="truncate">Tür: <strong class="text-blue-500">{{ form.materyalTuru === 'Seçim Yok' ? '—' : form.materyalTuru }}</strong></span>
-                    <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                <button type="button" @click="showType = true" class="tt-btn-quiet min-h-[36px] px-2.5 text-[13px] font-medium flex items-center gap-1 shrink-0 max-w-[45%]">
+                    <span class="truncate">Tür: <strong class="font-bold">{{ form.materyalTuru === 'Seçim Yok' ? '—' : form.materyalTuru }}</strong></span>
+                    <i class="fa-solid fa-chevron-down text-[9px] tt-sub"></i>
                 </button>
-                <p v-if="lastAdded" :class="isDark ? 'text-slate-400' : 'text-slate-500'" class="text-xs font-mono truncate flex-1 min-w-0 text-right">
-                    Son: {{ getEmanetDisplay(lastAdded) }}
-                </p>
+                <p v-if="lastAdded" class="tt-sub tt-num text-[13px] font-medium truncate flex-1 min-w-0 text-right">Son: {{ getEmanetDisplay(lastAdded) }}</p>
                 <span v-else class="flex-1"></span>
                 <div class="flex items-center gap-2 shrink-0">
                     <button type="button" @click="useSysKb = !useSysKb; if (useSysKb && emanetInput) emanetInput.focus()"
-                        :class="useSysKb ? 'bg-blue-600 text-white' : isDark ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-600'"
-                        class="min-h-[36px] px-2.5 rounded-lg text-sm font-semibold" title="Telefon klavyesi">
+                        :class="useSysKb ? 'tt-btn-outline' : 'tt-btn-quiet'"
+                        class="min-h-[36px] w-10 text-sm flex items-center justify-center" title="Telefon klavyesi">
                         <i class="fa-solid fa-keyboard"></i>
                     </button>
-                    <button v-if="lastAdded" type="button" @click="undoLast"
-                        class="min-h-[36px] px-2.5 rounded-lg text-xs font-bold bg-rose-500/10 text-rose-500 border border-rose-500/30">
+                    <button v-if="lastAdded" type="button" @click="undoLast" class="tt-btn-undo min-h-[36px] px-2.5 text-[13px]">
                         <i class="fa-solid fa-rotate-left mr-1"></i>Geri al
                     </button>
                 </div>
             </div>
+
             <div class="flex-1 min-h-0 grid grid-cols-3 grid-rows-4 gap-1.5">
                 <button
                     v-for="k in padKeys"
@@ -707,38 +698,23 @@
                     type="button"
                     @mousedown.prevent
                     @click="pressKey(k)"
-                    :class="k === 'yok'
-                        ? (activeIsYok ? 'bg-amber-500 text-white' : isDark ? 'bg-slate-700 text-amber-300' : 'bg-amber-100 text-amber-800')
-                        : k === 'back'
-                            ? (isDark ? 'bg-slate-700 text-slate-100' : 'bg-slate-200 text-slate-700')
-                            : (isDark ? 'bg-[#1e293b] text-slate-100 border border-slate-700' : 'bg-white text-slate-900 border border-slate-300')"
-                    class="min-h-[44px] rounded-xl text-2xl font-mono font-bold active:scale-95 transition shadow-sm">
+                    :class="['tt-key', k === 'back' ? 'alt' : '', k === 'yok' ? (activeIsYok ? 'alt alt-on' : 'alt') : '']">
                     <i v-if="k === 'back'" class="fa-solid fa-delete-left"></i>
-                    <span v-else-if="k === 'yok'" class="text-lg font-sans">Yok</span>
+                    <span v-else-if="k === 'yok'">Yok</span>
                     <span v-else>{{ k }}</span>
                 </button>
             </div>
 
-            <div class="grid grid-cols-3 gap-1.5 shrink-0">
-                <button
-                    type="button"
-                    @mousedown.prevent
-                    @click="switchField"
-                    :class="isDark ? 'bg-slate-700 text-slate-100' : 'bg-slate-200 text-slate-700'"
-                    class="min-h-[48px] rounded-xl text-sm font-bold leading-tight px-1 active:scale-95">
-                    <i :class="activeField === 'emanet' ? 'fa-solid fa-arrow-right' : 'fa-solid fa-arrow-left'" class="mr-1"></i>
+            <div class="grid grid-cols-3 gap-2 shrink-0">
+                <button type="button" @mousedown.prevent @click="switchField" class="tt-btn-outline min-h-[50px] text-[15px] font-bold flex items-center justify-center gap-1.5">
+                    <i :class="activeField === 'emanet' ? 'fa-solid fa-arrow-right' : 'fa-solid fa-arrow-left'"></i>
                     {{ activeField === 'emanet' ? 'Soruşturma' : 'Emanet' }}
                 </button>
-                <button
-                    type="button"
-                    @click="addItem"
-                    :class="justSaved ? 'bg-emerald-400' : 'bg-emerald-600 hover:bg-emerald-700'"
-                    class="col-span-2 min-h-[48px] rounded-xl text-white font-bold text-lg shadow-md shadow-emerald-600/20 active:scale-[0.98] transition">
-                    <i :class="justSaved ? 'fa-solid fa-circle-check' : 'fa-solid fa-check'" class="mr-1"></i>
-                    {{ justSaved ? 'KAYDEDİLDİ' : 'KAYDET' }}
+                <button type="button" @click="addItem" :class="['tt-save col-span-2', justSaved ? 'done' : '']">
+                    <i :class="justSaved ? 'fa-solid fa-circle-check' : 'fa-solid fa-check'"></i>
+                    {{ justSaved ? 'Kaydedildi' : 'Kaydet' }}
                 </button>
             </div>
-
         </div>
     </div>
 
@@ -853,23 +829,19 @@
     </div>
 
     <!-- ALT SEKME ÇUBUĞU -->
-    <nav
-        :class="isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'"
-        class="shrink-0 grid grid-cols-3 border-t no-print"
-        style="padding-bottom: env(safe-area-inset-bottom)">
+    <nav class="tt-nav shrink-0 grid grid-cols-3 no-print" style="padding-bottom: env(safe-area-inset-bottom)">
         <button
             v-for="t in tabs"
             :key="'tab-'+t.id"
             type="button"
             @click="tab = t.id"
-            :class="tab === t.id ? 'text-indigo-500' : 'text-slate-400'"
-            class="min-h-[58px] flex flex-col items-center justify-center gap-0.5 text-xs font-bold relative">
+            :class="['tt-tab', tab === t.id ? 'on' : '']">
+            <span v-if="tab === t.id" class="tt-tab-mark"></span>
             <span class="relative">
                 <i :class="t.icon" class="text-lg"></i>
-                <span v-if="t.id === 'liste' && items.length" class="absolute -top-1.5 left-3 min-w-[18px] px-1 h-[18px] rounded-full bg-indigo-600 text-white text-[10px] leading-[18px] text-center">{{ items.length }}</span>
+                <span v-if="t.id === 'liste' && items.length" class="tt-badge">{{ items.length }}</span>
             </span>
             {{ t.label }}
-            <span v-if="tab === t.id" class="absolute top-0 left-6 right-6 h-0.5 bg-indigo-500 rounded-b"></span>
         </button>
     </nav>
 
@@ -1155,7 +1127,8 @@
             };
 
             const updateBodyBackground = () => {
-                document.body.style.backgroundColor = isDark.value ? '#0b1120' : '#f1f5f9';
+                document.body.classList.toggle('dark', isDark.value);
+                document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark.value ? '#0A1020' : '#17274A');
             };
 
             const isFormEmanetYok = computed(() => (form.value.emanetNo || '').toString().trim().toLowerCase() === 'yok');
