@@ -70,10 +70,12 @@
            TEMA: TUTANAK (lacivert + mühür kırmızısı)
            ========================================================= */
         :root {
+            --keyedge: #17274A;
             --ground: #F2F4F7; --surface: #FFFFFF; --surface2: #FBFCFD; --ink: #17274A; --onink: #FFFFFF;
             --sub: #55627A; --rule: #C4CBD6; --tint: #E9EDF4; --seal: #9E2A2B; --head: #17274A;
         }
         body.dark {
+            --keyedge: #060A14;
             --ground: #0E1527; --surface: #18233E; --surface2: #142039; --ink: #E4EAF6; --onink: #0E1527;
             --sub: #9AA8C6; --rule: #33415F; --tint: #223152; --seal: #C14446; --head: #0A1020;
         }
@@ -99,10 +101,19 @@
         .tt-yr { width: 64px; text-align: center; background: var(--tint); color: var(--ink); border: 0; border-right: 1.5px solid var(--ink); font-size: 17px; font-weight: 600; outline: none; }
         .tt-no { flex: 1; min-width: 0; padding-left: 12px; background: transparent; color: var(--ink); border: 0; font-size: 26px; font-weight: 600; outline: none; caret-color: var(--ink); }
         .tt-no::placeholder { color: var(--sub); font-weight: 400; font-size: 22px; }
-        .tt-key { min-height: 44px; border: 1.5px solid var(--ink); border-radius: 4px; background: var(--surface); color: var(--ink); font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; display: flex; align-items: center; justify-content: center; }
+        .tt-key { min-height: 44px; touch-action: manipulation; user-select: none; -webkit-user-select: none; box-shadow: 0 3px 0 var(--keyedge); transition: transform .05s ease-out, box-shadow .05s ease-out, background-color .05s; border: 1.5px solid var(--ink); border-radius: 4px; background: var(--surface); color: var(--ink); font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; display: flex; align-items: center; justify-content: center; }
         .tt-key.alt { background: var(--tint); font-size: 18px; font-weight: 700; }
         .tt-key.alt-on { background: #D69A1C; color: #17274A; border-color: #17274A; }
-        .tt-key:active, .tt-btn-outline:active, .tt-save:active { transform: scale(0.97); }
+        .tt-key:active { transform: translateY(3px); box-shadow: 0 0 0 var(--keyedge); background: var(--tint); }
+        .tt-key.alt:active { background: var(--rule); }
+        .tt-btn-outline:active { transform: scale(0.97); }
+        .tt-save { touch-action: manipulation; box-shadow: 0 3px 0 #5C1A1B; transition: transform .05s ease-out, box-shadow .05s ease-out, background-color .15s; }
+        .tt-save:active { transform: translateY(3px); box-shadow: 0 0 0 #5C1A1B; }
+        .tt-yr-btn { width: 68px; display: flex; align-items: center; justify-content: center; gap: 4px; background: var(--tint); color: var(--ink); border: 0; border-right: 1.5px solid var(--ink); font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .tt-yr-btn.diff { background: #F6E3E3; color: var(--seal); }
+        body.dark .tt-yr-btn.diff { background: #3A1E26; color: #F0A0A2; }
+        .tt-sheet { background: var(--surface); color: var(--ink); }
+        .tt-input { width: 100%; min-height: 44px; padding: 0 12px; border: 1.5px solid var(--ink); border-radius: 4px; background: var(--surface2); color: var(--ink); font-size: 18px; font-variant-numeric: tabular-nums; outline: none; }
         .tt-save { min-height: 50px; border: 0; border-radius: 6px; background: var(--seal); color: #fff; font-size: 21px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; outline: 1.5px solid rgba(255,255,255,0.7); outline-offset: -5px; transition: background .15s; }
         .tt-save.done { background: #2E6B4F; }
         .tt-nav { background: var(--surface); border-top: 1.5px solid var(--ink); }
@@ -610,22 +621,11 @@
 
         <section class="tt-card shrink-0 p-2 flex flex-col gap-2">
             <div class="flex flex-col gap-1">
-                <div class="flex justify-between items-center">
-                    <span class="tt-ink text-sm font-bold">Emanet no</span>
-                    <div class="flex gap-1.5">
-                        <button
-                            type="button"
-                            v-for="yOff in [0,1,2,3]"
-                            :key="'emanety-'+yOff"
-                            @mousedown.prevent
-                            @click="setEmanetYil((parseInt(form.kararYili || 2013) - yOff).toString())"
-                            :class="['tt-chip', form.emanetYil === (parseInt(form.kararYili || 2013) - yOff).toString() ? 'on' : '']">
-                            {{ parseInt(form.kararYili || 2013) - yOff }}
-                        </button>
-                    </div>
-                </div>
+                <span class="tt-ink text-sm font-bold">Emanet no</span>
                 <div :class="['tt-field', activeField === 'emanet' ? 'active' : '']">
-                    <input type="text" inputmode="numeric" v-model="form.emanetYil" class="tt-yr tt-num">
+                    <button type="button" @click="openYearSheet('emanet')" :class="['tt-yr-btn', form.emanetYil !== form.kararYili ? 'diff' : '']" title="Yılı değiştir">
+                        {{ form.emanetYil }}<i class="fa-solid fa-chevron-down text-[9px] opacity-70"></i>
+                    </button>
                     <input
                         type="text"
                         :inputmode="useSysKb ? 'numeric' : 'none'"
@@ -638,24 +638,12 @@
                         class="tt-no tt-num">
                 </div>
             </div>
-
             <div class="flex flex-col gap-1">
-                <div class="flex justify-between items-center">
-                    <span class="tt-ink text-sm font-bold">Soruşturma / esas no</span>
-                    <div class="flex gap-1.5">
-                        <button
-                            type="button"
-                            v-for="yOff in [0,1,2,3]"
-                            :key="'dosyay-'+yOff"
-                            @mousedown.prevent
-                            @click="setDosyaYil((parseInt(form.kararYili || 2013) - yOff).toString())"
-                            :class="['tt-chip', form.dosyaYil === (parseInt(form.kararYili || 2013) - yOff).toString() ? 'on' : '']">
-                            {{ parseInt(form.kararYili || 2013) - yOff }}
-                        </button>
-                    </div>
-                </div>
+                <span class="tt-ink text-sm font-bold">Soruşturma / esas no</span>
                 <div :class="['tt-field', activeField === 'dosya' ? 'active' : '']">
-                    <input type="text" inputmode="numeric" v-model="form.dosyaYil" class="tt-yr tt-num">
+                    <button type="button" @click="openYearSheet('dosya')" :class="['tt-yr-btn', form.dosyaYil !== form.kararYili ? 'diff' : '']" title="Yılı değiştir">
+                        {{ form.dosyaYil }}<i class="fa-solid fa-chevron-down text-[9px] opacity-70"></i>
+                    </button>
                     <input
                         type="text"
                         :inputmode="useSysKb ? 'numeric' : 'none'"
@@ -668,7 +656,6 @@
                         class="tt-no tt-num">
                 </div>
             </div>
-
         </section>
 
         <div class="flex-1 min-h-[212px] flex flex-col gap-1.5">
@@ -691,7 +678,7 @@
                 </div>
             </div>
 
-            <div class="flex-1 min-h-0 grid grid-cols-3 grid-rows-4 gap-1.5">
+            <div class="flex-1 min-h-0 grid grid-cols-3 grid-rows-4 gap-x-2 gap-y-2.5 pb-1">
                 <button
                     v-for="k in padKeys"
                     :key="'pad-'+k"
@@ -822,6 +809,10 @@
                     <input type="file" accept=".json" @change="importJSON" class="hidden">
                 </label>
             </div>
+            <button type="button" @click="toggleSound" class="tt-btn-quiet w-full min-h-[52px] text-sm font-semibold flex items-center justify-center gap-2">
+                <i :class="soundOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark'"></i>
+                Tuş sesi: {{ soundOn ? 'açık' : 'kapalı' }}
+            </button>
             <button type="button" @click="promptReset" class="tt-btn-undo w-full min-h-[52px] text-sm flex items-center justify-center gap-2">
                 <i class="fa-solid fa-triangle-exclamation"></i> Verileri sıfırla
             </button>
@@ -844,6 +835,33 @@
             {{ t.label }}
         </button>
     </nav>
+
+    <!-- YIL SEÇİM SAYFASI -->
+    <div
+        v-if="yearSheet"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-black/60 no-print"
+        @click.self="yearSheet = null">
+        <div class="tt-sheet w-full max-w-md rounded-t-2xl p-4 space-y-3">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-sm">{{ yearSheet === 'emanet' ? 'Emanet yılı' : 'Soruşturma / esas yılı' }}</h3>
+                <button type="button" @click="yearSheet = null" class="w-11 h-11 tt-sub text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <button
+                    v-for="yy in yearOptions"
+                    :key="'yo-'+yy"
+                    type="button"
+                    @click="pickYear(yy)"
+                    :class="['tt-chip tt-chip-lg', currentSheetYear === yy ? 'on' : '']">
+                    {{ yy }}
+                </button>
+            </div>
+            <div class="flex gap-2">
+                <input type="text" inputmode="numeric" maxlength="4" v-model="customYear" placeholder="Başka yıl" class="tt-input">
+                <button type="button" @click="pickYear(customYear)" class="tt-btn-outline min-h-[44px] px-4 font-bold shrink-0">Uygula</button>
+            </div>
+        </div>
+    </div>
 
     <!-- EMANET TÜRÜ SEÇİM MODALI -->
     <div
@@ -1001,6 +1019,10 @@
             ];
             const padKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'back', '0', 'yok'];
             const tab = ref('kayit');
+            const yearSheet = ref(null);
+            const customYear = ref('');
+            const soundOn = ref(false);
+            let audioCtx = null;
             const activeField = ref('emanet');
             const useSysKb = ref(false);
             const lastAdded = ref(null);
@@ -1179,6 +1201,37 @@
                 activeField.value = 'dosya';
             };
 
+            const yearOptions = computed(() => {
+                const base = parseInt(form.value.kararYili || 2013);
+                return Array.from({ length: 6 }, (_, i) => String(base - i));
+            });
+            const currentSheetYear = computed(() => yearSheet.value === 'emanet' ? form.value.emanetYil : form.value.dosyaYil);
+            const openYearSheet = (f) => { customYear.value = ''; yearSheet.value = f; };
+            const pickYear = (y) => {
+                const yr = String(y || '').trim();
+                if (!/^\d{4}$/.test(yr)) { triggerToast('Yılı 4 haneli yaz (örn. 2009).', 'error'); return; }
+                if (yearSheet.value === 'emanet') setEmanetYil(yr); else setDosyaYil(yr);
+                yearSheet.value = null;
+            };
+
+            const playClick = (low) => {
+                if (!soundOn.value) return;
+                try {
+                    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                    o.type = 'square'; o.frequency.value = low ? 700 : 1700;
+                    g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (low ? 0.07 : 0.025));
+                    o.connect(g); g.connect(audioCtx.destination);
+                    o.start(); o.stop(audioCtx.currentTime + (low ? 0.08 : 0.03));
+                } catch (e) { /* ses desteklenmiyor */ }
+            };
+            const toggleSound = () => {
+                soundOn.value = !soundOn.value;
+                try { localStorage.setItem('emanet_sound', soundOn.value ? '1' : '0'); } catch (e) {}
+                playClick(false);
+            };
+
             const pressKey = (k) => {
                 const field = activeField.value === 'emanet' ? 'emanetNo' : 'dosyaNo';
                 let v = String(form.value[field] || '');
@@ -1187,7 +1240,8 @@
                 else if (k === 'yok') v = isYok ? '' : 'Yok';
                 else v = (isYok ? '' : v) + k;
                 form.value[field] = v;
-                if (navigator.vibrate) navigator.vibrate(8);
+                if (navigator.vibrate) navigator.vibrate(k === 'back' || k === 'yok' ? 14 : 10);
+                playClick(false);
             };
 
             const switchField = () => {
@@ -1307,6 +1361,7 @@
                     }
                 }
                 if (localStorage.getItem('emanet_dark_mode') === '1') isDark.value = true;
+                if (localStorage.getItem('emanet_sound') === '1') soundOn.value = true;
                 updateBodyBackground();
 
                 if ('serviceWorker' in navigator) {
@@ -1366,7 +1421,8 @@
                 justSaved.value = true;
                 clearTimeout(justSavedTimer);
                 justSavedTimer = setTimeout(() => { justSaved.value = false; }, 700);
-                if (navigator.vibrate) navigator.vibrate(30);
+                if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+                playClick(true);
             };
 
             const deleteItem = (id) => {
@@ -1431,6 +1487,14 @@
                 reversedItems,
                 visibleItems,
                 tabs,
+                yearSheet,
+                customYear,
+                soundOn,
+                yearOptions,
+                currentSheetYear,
+                openYearSheet,
+                pickYear,
+                toggleSound,
                 padKeys,
                 tab,
                 activeField,
